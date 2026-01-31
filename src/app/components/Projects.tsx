@@ -1,19 +1,23 @@
 import { motion } from "motion/react";
 import { useInView } from "motion/react";
 import { useRef, useState } from "react";
-import { FileText, ArrowUpRight, Globe } from "lucide-react";
+import { FileText, ArrowUpRight, Globe, ChevronLeft, ChevronRight } from "lucide-react";
 
 export function Projects() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: number]: number }>({});
 
   const projects = [
     {
       title: "U4B Full Stack Application",
       description:
         "Single-handedly developed the complete Upcycle 4 Better mobile/web application during my internship. Built robust backend with 100% JavaScript and RESTful API architecture, frontend with 98% TypeScript for type safety. Features include user authentication, donation tracking with video verification, QR code scanning for 49+ bin locations across Malaysia, and voucher redemption system integrated with partner stores like Zalora and Best Bundle.",
-      image: "/assets/projects/u4b-dashboard.png",
+      images: [
+        "/assets/projects/u4b-dashboard.png",
+        "/assets/projects/u4b-login.png",
+      ],
       tags: ["JavaScript", "TypeScript", "Full Stack", "REST API", "UI/UX Design"],
       color: "from-blue-500 to-cyan-500",
       hasReport: false,
@@ -23,7 +27,11 @@ export function Projects() {
       title: "CubeXTech Company Website",
       description:
         "Designed and developed the official company website for CubeX Technology, a premium tech solutions provider based in Malaysia. Built with React and modern web technologies, featuring a sleek dark theme with purple and emerald gradient accents. The website showcases the company's services including CubeX Home residential security, custom software development, warehouse management, and automation systems. Highlights include an animated 3D wireframe cube hero section, smooth scroll animations, responsive design, and a professional contact form.",
-      image: "/assets/projects/cubex-website.png",
+      images: [
+        "/assets/projects/cubex-website.png",
+        "/assets/projects/cubex-website-2.png",
+        "/assets/projects/cubex-website-3.png",
+      ],
       tags: ["React", "Web Design", "UI/UX", "Tailwind CSS", "Corporate Website"],
       color: "from-purple-500 to-emerald-500",
       hasReport: false,
@@ -33,7 +41,10 @@ export function Projects() {
       title: "CubeX Visitor Management System",
       description:
         "Comprehensive VMS serving 3+ residential properties including PJS 1, MMC Ampang, and Sri Ara Residences. Built with Google Apps Script and modern web technologies. Features include multi-property visitor registration, QR code generation for entry verification, guard verification portal, resident lookup functionality, and automated email notifications to residents upon visitor registration.",
-      image: "/assets/projects/vms-home.png",
+      images: [
+        "/assets/projects/vms-home.png",
+        "/assets/projects/vms-form.png",
+      ],
       tags: ["Google Apps Script", "VPS Hosting", "QR Code", "Web App", "Automation"],
       color: "from-purple-500 to-pink-500",
       hasReport: false,
@@ -42,7 +53,11 @@ export function Projects() {
       title: "Security Guard Attendance App",
       description:
         "Mobile application for security personnel to manage their attendance with GPS-verified check-ins. Features include real-time location verification ensuring guards are at assigned locations, monthly attendance summaries with hours worked tracking, detailed attendance history with check-in/out times, and seamless integration with the CubeX Admin Dashboard for supervisors to monitor guard activities.",
-      image: "/assets/projects/guard-app-dashboard.png",
+      images: [
+        "/assets/projects/guard-app-dashboard.png",
+        "/assets/projects/guard-app-checkin.png",
+        "/assets/projects/guard-app-history.png",
+      ],
       tags: ["Mobile App", "GPS Verification", "Attendance", "Real-time Tracking"],
       color: "from-green-500 to-teal-500",
       hasReport: false,
@@ -51,7 +66,13 @@ export function Projects() {
       title: "CubeX Admin Dashboard",
       description:
         "Comprehensive security operations admin panel managing 1,247+ guards across multiple locations. Features include real-time activity feed with live check-in/out monitoring, attendance records management with GPS verification status, automated payroll calculation module handling RM330,000+ monthly, guard management system, and advanced reports & analytics with Excel/PDF/CSV export capabilities.",
-      image: "/assets/projects/admin-dashboard.png",
+      images: [
+        "/assets/projects/admin-dashboard.png",
+        "/assets/projects/admin-login.png",
+        "/assets/projects/admin-attendance.png",
+        "/assets/projects/admin-payroll.png",
+        "/assets/projects/admin-reports.png",
+      ],
       tags: ["React", "Dashboard", "Payroll System", "Analytics", "Admin Panel"],
       color: "from-indigo-500 to-blue-500",
       hasReport: false,
@@ -60,7 +81,11 @@ export function Projects() {
       title: "CubeX Home Resident App",
       description:
         "Smart living companion app for residential security management. Features OTP-based phone authentication, biometric and Face ID login options for enhanced security, visitor pre-registration allowing residents to notify guards in advance, and seamless integration with the entire CubeX security ecosystem for a unified experience.",
-      image: "/assets/projects/cubex-home.png",
+      images: [
+        "/assets/projects/cubex-home.png",
+        "/assets/projects/cubex-dashboard.png",
+        "/assets/projects/cubex-guard.png",
+      ],
       tags: ["Mobile App", "Biometric Auth", "OTP", "Security", "Smart Living"],
       color: "from-emerald-500 to-green-500",
       hasReport: false,
@@ -69,13 +94,33 @@ export function Projects() {
       title: "UAV Communication & Mobility (FYP)",
       description:
         "Final Year Project implementing reinforcement learning algorithms and Terahertz (THz) communication for enhanced UAV communication and mobility in Flying Ad-hoc Networks (FANETs). Using NS3 network simulator to create real-life simulations of UAV mobility models. Research focuses on optimizing communication reliability and network performance in dynamic aerial environments.",
-      image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+      images: [
+        "https://images.unsplash.com/photo-1473968512647-3e447244af8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+      ],
       tags: ["Machine Learning", "NS3 Simulator", "Terahertz", "Research", "UAV"],
       color: "from-violet-500 to-purple-500",
       hasReport: true,
-      reportLink: "/assets/reports/UAV_FYP_Report.pdf", // Add your PDF to public/assets/reports/
+      reportLink: "/assets/reports/UAV_FYP_Report.pdf",
     },
   ];
+
+  const nextImage = (projectIndex: number, totalImages: number) => {
+    setCurrentImageIndex((prev) => ({
+      ...prev,
+      [projectIndex]: ((prev[projectIndex] || 0) + 1) % totalImages,
+    }));
+  };
+
+  const prevImage = (projectIndex: number, totalImages: number) => {
+    setCurrentImageIndex((prev) => ({
+      ...prev,
+      [projectIndex]: ((prev[projectIndex] || 0) - 1 + totalImages) % totalImages,
+    }));
+  };
+
+  const getCurrentImageIndex = (projectIndex: number) => {
+    return currentImageIndex[projectIndex] || 0;
+  };
 
   return (
     <section id="projects" className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 py-32 px-6 relative overflow-hidden">
@@ -143,13 +188,58 @@ export function Projects() {
                     transition={{ duration: 0.3 }}
                     className="relative group"
                   >
-                    <div className="aspect-[16/10] rounded-2xl overflow-hidden border border-slate-700/50">
+                    <div className="aspect-[16/10] rounded-2xl overflow-hidden border border-slate-700/50 relative">
                       <img
-                        src={project.image}
+                        src={project.images[getCurrentImageIndex(index)]}
                         alt={project.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      
+                      {/* Navigation Arrows - Only show if more than 1 image */}
+                      {project.images.length > 1 && (
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              prevImage(index, project.images.length);
+                            }}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/20"
+                          >
+                            <ChevronLeft className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              nextImage(index, project.images.length);
+                            }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-sm border border-white/20"
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                          
+                          {/* Image Indicators */}
+                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            {project.images.map((_, imgIndex) => (
+                              <button
+                                key={imgIndex}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCurrentImageIndex((prev) => ({
+                                    ...prev,
+                                    [index]: imgIndex,
+                                  }));
+                                }}
+                                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                  getCurrentImageIndex(index) === imgIndex
+                                    ? "bg-white w-4"
+                                    : "bg-white/50 hover:bg-white/80"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     {/* Glowing border effect */}
