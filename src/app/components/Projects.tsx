@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { useInView } from "motion/react";
 import { useRef, useState } from "react";
-import { FileText, ArrowUpRight } from "lucide-react";
+import { FileText, ArrowUpRight, Globe } from "lucide-react";
 
 export function Projects() {
   const ref = useRef(null);
@@ -17,6 +17,17 @@ export function Projects() {
       tags: ["JavaScript", "TypeScript", "Full Stack", "REST API", "UI/UX Design"],
       color: "from-blue-500 to-cyan-500",
       hasReport: false,
+      liveLink: "https://u4b-app--u4bapp.asia-southeast1.hosted.app/login",
+    },
+    {
+      title: "CubeXTech Company Website",
+      description:
+        "Designed and developed the official company website for CubeX Technology, a premium tech solutions provider based in Malaysia. Built with React and modern web technologies, featuring a sleek dark theme with purple and emerald gradient accents. The website showcases the company's services including CubeX Home residential security, custom software development, warehouse management, and automation systems. Highlights include an animated 3D wireframe cube hero section, smooth scroll animations, responsive design, and a professional contact form.",
+      image: "/assets/projects/cubex-website.png",
+      tags: ["React", "Web Design", "UI/UX", "Tailwind CSS", "Corporate Website"],
+      color: "from-purple-500 to-emerald-500",
+      hasReport: false,
+      liveLink: "https://cubextech.net",
     },
     {
       title: "CubeX Visitor Management System",
@@ -180,6 +191,22 @@ export function Projects() {
                         </span>
                       ))}
                     </div>
+
+                    {/* Show View Live button for projects with live links */}
+                    {project.liveLink && (
+                      <div className="flex gap-4 mb-4">
+                        <a
+                          href={project.liveLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl transition-all duration-300"
+                        >
+                          <Globe className="w-4 h-4" />
+                          <span>View Live</span>
+                          <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        </a>
+                      </div>
+                    )}
 
                     {/* Only show View Report button for FYP project */}
                     {project.hasReport && (
