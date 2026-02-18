@@ -13,26 +13,27 @@ export function Projects() {
     {
       title: "U4B Full Stack Application",
       description:
-        "Single-handedly developed the complete Upcycle 4 Better mobile/web application during my internship. Built robust backend with 100% JavaScript and RESTful API architecture, frontend with 98% TypeScript for type safety. Features include user authentication, donation tracking with video verification, QR code scanning for 49+ bin locations across Malaysia, and voucher redemption system integrated with partner stores like Zalora and Best Bundle.",
+        "Single-handedly developed the complete Upcycle 4 Better web application during my internship, transforming a manual email-based donation verification process into a streamlined digital platform. The app serves 50+ bin locations across Malaysia, featuring QR code scanning for automatic bin registration, in-app video recording with GPS verification to prevent fraud, and a comprehensive admin dashboard for donation approval. Built with Next.js 16, React 19, TypeScript, and Node.js/Express backend with PostgreSQL database. Reduced verification time from 3-5 days to under 24 hours.",
       images: [
         "/assets/projects/u4b-dashboard.png",
         "/assets/projects/u4b-login.png",
       ],
-      tags: ["JavaScript", "TypeScript", "Full Stack", "REST API", "UI/UX Design"],
-      color: "from-blue-500 to-cyan-500",
-      hasReport: false,
+      tags: ["Next.js", "TypeScript", "Node.js", "PostgreSQL", "Full Stack"],
+      color: "from-green-500 to-emerald-500",
+      hasReport: true,
+      reportLink: "/assets/reports/U4B-Case-Study.pdf",
       liveLink: "https://u4b-app--u4bapp.asia-southeast1.hosted.app/login",
     },
     {
       title: "CubeXTech Company Website",
       description:
-        "Designed and developed the official company website for CubeX Technology, a premium tech solutions provider based in Malaysia. Built with React and modern web technologies, featuring a sleek dark theme with purple and emerald gradient accents. The website showcases the company's services including CubeX Home residential security, custom software development, warehouse management, and automation systems. Highlights include an animated 3D wireframe cube hero section, smooth scroll animations, responsive design, and a professional contact form.",
+        "Designed and developed the official company website for CubeX Technology, a premium tech solutions provider based in Malaysia. Built with React and modern web technologies, featuring a sleek dark theme with teal gradient accents. The website showcases the company's services including CubeX Home residential security, custom software development, and automation systems. Highlights include an animated 3D wireframe cube hero section, smooth scroll animations, responsive design, and a professional contact form with PHP backend.",
       images: [
         "/assets/projects/cubex-website.png",
         "/assets/projects/cubex-website-2.png",
         "/assets/projects/cubex-website-3.png",
       ],
-      tags: ["React", "Web Design", "UI/UX", "Tailwind CSS", "Corporate Website"],
+      tags: ["React", "Vite", "Tailwind CSS", "Framer Motion", "PHP"],
       color: "from-purple-500 to-emerald-500",
       hasReport: false,
       liveLink: "https://cubextech.net",
@@ -40,64 +41,44 @@ export function Projects() {
     {
       title: "CubeX Visitor Management System",
       description:
-        "Comprehensive VMS serving 3+ residential properties including PJS 1, MMC Ampang, and Sri Ara Residences. Built with Google Apps Script and modern web technologies. Features include multi-property visitor registration, QR code generation for entry verification, guard verification portal, resident lookup functionality, and automated email notifications to residents upon visitor registration.",
+        "Production VMS currently serving 3+ condominiums across Malaysia including PJS 1, MMC Ampang, and Sri Ara Residences. Built with PHP backend and Google Sheets API for data management. Features include multi-property visitor registration with custom branding per site, QR code generation for entry verification, guard verification portal with PIN authentication, resident lookup functionality, automated Telegram notifications to guards, and scheduled daily/monthly PDF reports to property managers via Google Apps Script automation.",
       images: [
         "/assets/projects/vms-home.png",
         "/assets/projects/vms-form.png",
       ],
-      tags: ["Google Apps Script", "VPS Hosting", "QR Code", "Web App", "Automation"],
+      tags: ["PHP", "Google Sheets API", "Telegram Bot", "QR Code", "VPS"],
       color: "from-purple-500 to-pink-500",
       hasReport: false,
+      liveLink: "https://vms.cubextech.net",
     },
     {
-      title: "Security Guard Attendance App",
+      title: "CubeXHome — Property Security Platform",
       description:
-        "Mobile application for security personnel to manage their attendance with GPS-verified check-ins. Features include real-time location verification ensuring guards are at assigned locations, monthly attendance summaries with hours worked tracking, detailed attendance history with check-in/out times, and seamless integration with the CubeX Admin Dashboard for supervisors to monitor guard activities.",
+        "Comprehensive property security and management platform designed for Malaysian condominiums. The ecosystem includes 3 role-based web dashboards (Security Head with teal theme, Site Management with purple theme, Super Admin with crimson theme) and a multi-role mobile app serving Residents, Guards, and Security Heads. Key features include OTP + biometric authentication, real-time guard tracking with patrol verification, incident management system, resident billing & feedback, visitor pre-registration, emergency SOS alerts, and an automated service killswitch for subscription management. Built with React, Node.js, PostgreSQL, Prisma, and React Native/Expo.",
       images: [
-        "/assets/projects/guard-app-dashboard.png",
-        "/assets/projects/guard-app-checkin.png",
-        "/assets/projects/guard-app-history.png",
+        "/assets/projects/cubexhome-security-dashboard.png",
+        "/assets/projects/cubexhome-management-dashboard.png",
+        "/assets/projects/cubexhome-admin-dashboard.png",
+        "/assets/projects/cubexhome-resident-home.jpg",
+        "/assets/projects/cubexhome-guard-dashboard.jpg",
+        "/assets/projects/cubexhome-securityhead-dashboard.jpg",
+        "/assets/projects/cubexhome-app-login.jpg",
+        "/assets/projects/cubexhome-guard-login.jpg",
+        "/assets/projects/cubexhome-securityhead-guards.jpg",
       ],
-      tags: ["Mobile App", "GPS Verification", "Attendance", "Real-time Tracking"],
-      color: "from-green-500 to-teal-500",
-      hasReport: false,
-    },
-    {
-      title: "CubeX Admin Dashboard",
-      description:
-        "Comprehensive security operations admin panel managing 1,247+ guards across multiple locations. Features include real-time activity feed with live check-in/out monitoring, attendance records management with GPS verification status, automated payroll calculation module handling RM330,000+ monthly, guard management system, and advanced reports & analytics with Excel/PDF/CSV export capabilities.",
-      images: [
-        "/assets/projects/admin-dashboard.png",
-        "/assets/projects/admin-login.png",
-        "/assets/projects/admin-attendance.png",
-        "/assets/projects/admin-payroll.png",
-        "/assets/projects/admin-reports.png",
-      ],
-      tags: ["React", "Dashboard", "Payroll System", "Analytics", "Admin Panel"],
-      color: "from-indigo-500 to-blue-500",
-      hasReport: false,
-    },
-    {
-      title: "CubeX Home Resident App",
-      description:
-        "Smart living companion app for residential security management. Features OTP-based phone authentication, biometric and Face ID login options for enhanced security, visitor pre-registration allowing residents to notify guards in advance, and seamless integration with the entire CubeX security ecosystem for a unified experience.",
-      images: [
-        "/assets/projects/cubex-home.png",
-        "/assets/projects/cubex-dashboard.png",
-        "/assets/projects/cubex-guard.png",
-      ],
-      tags: ["Mobile App", "Biometric Auth", "OTP", "Security", "Smart Living"],
-      color: "from-emerald-500 to-green-500",
-      hasReport: false,
+      tags: ["React", "React Native", "Node.js", "PostgreSQL", "Prisma", "Security"],
+      color: "from-cyan-500 to-emerald-500",
+      hasReport: true,
+      reportLink: "/assets/reports/CubeXHome-Case-Study.pdf",
     },
     {
       title: "UAV Communication & Mobility (FYP)",
       description:
-        "Final Year Project implementing reinforcement learning algorithms and Terahertz (THz) communication for enhanced UAV communication and mobility in Flying Ad-hoc Networks (FANETs). Using NS3 network simulator to create real-life simulations of UAV mobility models. Research focuses on optimizing communication reliability and network performance in dynamic aerial environments.",
+        "Final Year Project implementing reinforcement learning algorithms and Terahertz (THz) communication for enhanced UAV communication and mobility in Flying Ad-hoc Networks (FANETs). Using NS3 network simulator to create real-life simulations of UAV mobility models. Research focuses on optimizing communication reliability, analyzing network security vulnerabilities, and improving data transmission efficiency in dynamic aerial environments.",
       images: [
         "https://images.unsplash.com/photo-1473968512647-3e447244af8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
       ],
-      tags: ["Machine Learning", "NS3 Simulator", "Terahertz", "Research", "UAV"],
+      tags: ["Python", "NS3 Simulator", "Machine Learning", "Network Security", "Research"],
       color: "from-violet-500 to-purple-500",
       hasReport: true,
       reportLink: "/assets/reports/UAV_FYP_Report.pdf",
@@ -151,25 +132,27 @@ export function Projects() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-6xl mb-6 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent"
+              className="text-5xl md:text-6xl text-white mb-6"
             >
               Featured Projects
             </motion.h2>
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto"
-            />
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-slate-400 text-xl max-w-2xl mx-auto"
+            >
+              Production systems serving real clients across Malaysia
+            </motion.p>
           </div>
 
-          {/* Projects grid */}
+          {/* Projects */}
           <div className="space-y-32">
             {projects.map((project, index) => (
               <motion.div
                 key={project.title}
-                initial={{ opacity: 0, y: 100 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 100 }}
+                initial={{ opacity: 0, y: 80 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 80 }}
                 transition={{ duration: 0.8, delay: index * 0.15 }}
                 className={`grid lg:grid-cols-2 gap-12 items-center ${
                   index % 2 === 1 ? "lg:flex-row-reverse" : ""
@@ -282,9 +265,10 @@ export function Projects() {
                       ))}
                     </div>
 
-                    {/* Show View Live button for projects with live links */}
-                    {project.liveLink && (
-                      <div className="flex gap-4 mb-4">
+                    {/* Buttons row */}
+                    <div className="flex flex-wrap gap-4">
+                      {/* Show View Live button for projects with live links */}
+                      {project.liveLink && (
                         <a
                           href={project.liveLink}
                           target="_blank"
@@ -295,12 +279,10 @@ export function Projects() {
                           <span>View Live</span>
                           <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </a>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Only show View Report button for FYP project */}
-                    {project.hasReport && (
-                      <div className="flex gap-4">
+                      {/* Show View Case Study button for projects with reports */}
+                      {project.hasReport && (
                         <a
                           href={project.reportLink}
                           target="_blank"
@@ -308,11 +290,11 @@ export function Projects() {
                           className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl transition-all duration-300"
                         >
                           <FileText className="w-4 h-4" />
-                          <span>View Project Report</span>
+                          <span>View Case Study</span>
                           <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </a>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </motion.div>
                 </div>
               </motion.div>
