@@ -1,318 +1,359 @@
-import { motion } from "motion/react";
-import { useInView } from "motion/react";
-import { useRef, useState } from "react";
-import { Mail, MapPin, Phone, Send, CheckCircle, Linkedin, Github } from "lucide-react";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { ScrollReveal } from "./ScrollReveal";
+import { TiltCard } from "./TiltCard";
+
+const contactInfo = [
+  { icon: "✉️", label: "Email", value: "jilaniazwad@gmail.com", href: "mailto:jilaniazwad@gmail.com", color: "#8b5cf6" },
+  { icon: "📞", label: "Phone", value: "+60 16-612 9670", href: "tel:+60166129670", color: "#3b82f6" },
+  { icon: "📍", label: "Location", value: "Subang Jaya, Malaysia", href: "#", color: "#a855f7" },
+];
+
+function RippleButton({ children, type = "button", disabled, onClick }: {
+  children: React.ReactNode; type?: "button" | "submit"; disabled?: boolean; onClick?: () => void;
+}) {
+  const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [hovered, setHovered] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const btn = btnRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const id = Date.now();
+    setRipples((p) => [...p, { id, x: e.clientX - rect.left, y: e.clientY - rect.top }]);
+    setTimeout(() => setRipples((p) => p.filter((r) => r.id !== id)), 700);
+    onClick?.();
+  };
+
+  return (
+    <motion.button
+      ref={btnRef}
+      type={type}
+      disabled={disabled}
+      onClick={handleClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative w-full py-3.5 rounded-xl text-sm font-medium text-white overflow-hidden"
+      style={{
+        background: disabled ? "rgba(139,92,246,0.3)" : "linear-gradient(135deg, #7c3aed, #6d28d9)",
+        border: "1px solid rgba(139,92,246,0.4)",
+      }}
+      whileHover={!disabled ? { scale: 1.015, boxShadow: "0 0 32px rgba(139,92,246,0.45)" } : {}}
+      whileTap={!disabled ? { scale: 0.975 } : {}}
+      data-cursor="Send"
+    >
+      <motion.div
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(135deg, #8b5cf6, #3b82f6)" }}
+        animate={{ opacity: hovered && !disabled ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+      />
+      {hovered && !disabled && (
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%)" }}
+          initial={{ x: "-120%" }}
+          animate={{ x: "120%" }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+        />
+      )}
+      {ripples.map((r) => (
+        <motion.div
+          key={r.id}
+          className="absolute rounded-full pointer-events-none"
+          style={{ left: r.x, top: r.y, background: "rgba(255,255,255,0.28)", transform: "translate(-50%,-50%)" }}
+          initial={{ width: 0, height: 0, opacity: 0.8 }}
+          animate={{ width: 320, height: 320, opacity: 0 }}
+          transition={{ duration: 0.65, ease: "easeOut" }}
+        />
+      ))}
+      <span className="relative z-10">{children}</span>
+    </motion.button>
+  );
+}
+
+function FloatingInput({ label, type = "text", name, placeholder, value, onChange, textarea }: {
+  label: string; type?: string; name: string; placeholder: string; value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void; textarea?: boolean;
+}) {
+  const [focused, setFocused] = useState(false);
+  const commonStyle: React.CSSProperties = {
+    background: "rgba(255,255,255,0.04)",
+    border: `1px solid ${focused ? "rgba(139,92,246,0.65)" : "rgba(255,255,255,0.09)"}`,
+    boxShadow: focused ? "0 0 22px rgba(139,92,246,0.12), inset 0 0 12px rgba(139,92,246,0.04)" : "none",
+    color: "rgba(255,255,255,0.9)",
+    outline: "none",
+    transition: "border-color 0.25s, box-shadow 0.25s",
+    width: "100%",
+  };
+
+  return (
+    <div className="relative">
+      <label
+        className="block text-xs mb-2 transition-colors duration-200"
+        style={{ color: focused ? "#a78bfa" : "rgba(255,255,255,0.45)" }}
+      >
+        {label}
+      </label>
+      {textarea ? (
+        <textarea
+          name={name}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          rows={5}
+          className="px-4 py-3 rounded-xl text-sm resize-none"
+          style={commonStyle}
+          required
+        />
+      ) : (
+        <input
+          type={type}
+          name={name}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          className="px-4 py-3 rounded-xl text-sm"
+          style={commonStyle}
+          required
+        />
+      )}
+      <motion.div
+        className="absolute bottom-0 left-0 h-px rounded-full pointer-events-none"
+        style={{ background: "linear-gradient(90deg, #8b5cf6, #3b82f6)" }}
+        animate={{ width: focused ? "100%" : "0%" }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      />
+    </div>
+  );
+}
+
+function ContactCard({ info, index }: { info: (typeof contactInfo)[0]; index: number }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <motion.a
+      href={info.href}
+      className="relative flex items-center gap-4 p-4 rounded-2xl overflow-hidden group"
+      style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${hovered ? `${info.color}45` : "rgba(255,255,255,0.07)"}`, transition: "border-color 0.25s" }}
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 + 0.2 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      whileHover={{ x: 5, boxShadow: `0 0 24px ${info.color}14` }}
+      data-cursor="Contact"
+    >
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: `linear-gradient(90deg, ${info.color}0c, transparent)`, originX: 0 }}
+        animate={{ scaleX: hovered ? 1 : 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      />
+
+      <motion.div
+        className="w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0 relative z-10"
+        style={{ background: `${info.color}20` }}
+        animate={hovered ? { scale: 1.12, rotate: [0, -8, 8, 0] } : { scale: 1, rotate: 0 }}
+        transition={{ duration: 0.35 }}
+      >
+        {info.icon}
+      </motion.div>
+
+      <div className="relative z-10 flex-1 min-w-0">
+        <p className="text-xs mb-0.5" style={{ color: "rgba(255,255,255,0.38)" }}>{info.label}</p>
+        <p className="text-sm truncate" style={{ color: hovered ? "#fff" : "rgba(255,255,255,0.78)", transition: "color 0.2s" }}>
+          {info.value}
+        </p>
+      </div>
+
+      <motion.div
+        className="relative z-10 text-sm"
+        style={{ color: hovered ? info.color : "rgba(255,255,255,0.2)", transition: "color 0.2s" }}
+        animate={hovered ? { x: [0, 5, 0] } : { x: 0 }}
+        transition={{ duration: 0.6, repeat: hovered ? Infinity : 0 }}
+      >
+        →
+      </motion.div>
+    </motion.a>
+  );
+}
 
 export function Contact() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Using Formspree - Replace YOUR_FORM_ID with your actual Formspree form ID
-    // Get your free form ID at https://formspree.io
+    if (!formData.name || !formData.email || !formData.message) return;
+    setStatus("sending");
+
     try {
       const response = await fetch("https://formspree.io/f/xykkevna", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      
+
       if (response.ok) {
-        setIsSubmitted(true);
+        setStatus("sent");
         setFormData({ name: "", email: "", message: "" });
+        setTimeout(() => setStatus("idle"), 3000);
+      } else {
+        setStatus("idle");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+      setStatus("idle");
     }
-    setIsSubmitting(false);
   };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const contactInfo = [
-    {
-      icon: Mail,
-      label: "Email",
-      value: "jilaniazwad@gmail.com",
-      href: "mailto:jilaniazwad@gmail.com",
-      gradient: "from-blue-500 to-cyan-500",
-    },
-    {
-      icon: Phone,
-      label: "Phone",
-      value: "+60 16-612 9670",
-      href: "tel:+60166129670",
-      gradient: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: MapPin,
-      label: "Location",
-      value: "Subang Jaya, Malaysia",
-      href: "#",
-      gradient: "from-blue-500 to-purple-500",
-    },
-  ];
-
-  const socialLinks = [
-    {
-      icon: Linkedin,
-      label: "LinkedIn",
-      href: "https://linkedin.com/in/azwad-jilani/",
-      gradient: "from-blue-600 to-blue-400",
-    },
-    {
-      icon: Github,
-      label: "GitHub",
-      href: "https://github.com/nv-azwad",
-      gradient: "from-gray-600 to-gray-400",
-    },
-  ];
 
   return (
-    <section id="contact" className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950 py-32 px-6 relative overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_70%)]" />
+    <section
+      id="contact"
+      className="relative py-24 overflow-hidden"
+      style={{ background: "linear-gradient(180deg, #080818 0%, #06061a 100%)" }}
+    >
+      <div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, rgba(139,92,246,0.07) 0%, transparent 70%)", filter: "blur(60px)" }}
+      />
 
-      <div className="container mx-auto max-w-7xl relative z-10">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          {/* Section header */}
-          <div className="text-center mb-20">
+      <div className="max-w-7xl mx-auto px-6">
+        <ScrollReveal className="text-center mb-16">
+          <span className="text-xs tracking-widest uppercase mb-3 block" style={{ color: "#8b5cf6" }}>Get In Touch</span>
+          <h2 className="text-4xl lg:text-5xl font-black text-white relative inline-block">
+            Let's Work Together
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.6 }}
-              className="inline-block mb-4"
-            >
-              <span className="text-purple-400 text-sm uppercase tracking-widest">
-                Get In Touch
-              </span>
-            </motion.div>
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-6xl mb-6 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent"
-            >
-              Let's Work Together
-            </motion.h2>
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto"
+              className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-px rounded-full"
+              style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, #3b82f6, transparent)" }}
+              initial={{ width: 0 }} whileInView={{ width: "60%" }} viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.3 }}
             />
-          </div>
+          </h2>
+        </ScrollReveal>
 
-          <div className="grid lg:grid-cols-2 gap-16">
-            {/* Contact Info */}
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          {/* Left — contact info */}
+          <ScrollReveal direction="left">
+            <p className="leading-relaxed mb-8" style={{ color: "rgba(255,255,255,0.55)" }}>
+              Have a project in mind or just want to chat? I'd love to hear from you.
+              Drop me a message and I'll get back to you as soon as possible.
+            </p>
+            <div className="space-y-3">
+              {contactInfo.map((info, i) => (
+                <ContactCard key={info.label} info={info} index={i} />
+              ))}
+            </div>
+
+            {/* Social availability badge */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              className="mt-8 flex items-center gap-3 px-4 py-3 rounded-2xl"
+              style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)" }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+              whileHover={{ borderColor: "rgba(34,197,94,0.35)", boxShadow: "0 0 20px rgba(34,197,94,0.07)" }}
             >
-              <p className="text-slate-300 text-lg mb-12 leading-relaxed">
-                Have a project in mind or just want to chat? I'd love to hear
-                from you. Drop me a message and I'll get back to you as soon as
-                possible.
-              </p>
-
-              <div className="space-y-6">
-                {contactInfo.map((info, index) => (
-                  <motion.a
-                    key={info.label}
-                    href={info.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={
-                      isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-                    }
-                    transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
-                    className="group relative flex items-center gap-6 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300"
-                  >
-                    {/* Glowing effect */}
-                    <div
-                      className={`absolute -inset-1 bg-gradient-to-r ${info.gradient} rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 -z-10`}
-                    />
-
-                    <div
-                      className={`p-4 bg-gradient-to-br ${info.gradient} bg-opacity-10 rounded-xl group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <info.icon className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div>
-                      <p className="text-slate-400 text-sm mb-1">
-                        {info.label}
-                      </p>
-                      <p className="text-white text-lg">{info.value}</p>
-                    </div>
-                  </motion.a>
-                ))}
-              </div>
-
-              {/* Social Links */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                transition={{ duration: 0.6, delay: 0.7 }}
-                className="mt-8"
-              >
-                <p className="text-slate-400 text-sm mb-4">Connect with me</p>
-                <div className="flex gap-4">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`group p-4 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm rounded-xl border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300`}
-                    >
-                      <social.icon className="w-6 h-6 text-slate-400 group-hover:text-white transition-colors" />
-                    </a>
-                  ))}
-                </div>
-              </motion.div>
+                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                style={{ background: "#22c55e", boxShadow: "0 0 8px rgba(34,197,94,0.7)" }}
+                animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>
+                Available for freelance &amp; full-time opportunities
+              </p>
             </motion.div>
+          </ScrollReveal>
 
-            {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              <form
-                onSubmit={handleSubmit}
-                className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm p-8 rounded-2xl border border-slate-700/50"
+          {/* Right — form */}
+          <ScrollReveal direction="right">
+            <TiltCard className="rounded-3xl" intensity={4} glowColor="rgba(139,92,246,0.08)">
+              <motion.div
+                className="p-8 rounded-3xl"
+                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)" }}
+                whileHover={{ borderColor: "rgba(139,92,246,0.2)" }}
+                transition={{ duration: 0.3 }}
               >
-                <div className="mb-6">
-                  <label
-                    htmlFor="name"
-                    className="block text-slate-300 mb-3 text-sm"
-                  >
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="John Doe"
-                    className="w-full px-5 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                    required
-                  />
-                </div>
-
-                <div className="mb-6">
-                  <label
-                    htmlFor="email"
-                    className="block text-slate-300 mb-3 text-sm"
-                  >
-                    Your Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="john@example.com"
-                    className="w-full px-5 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                    required
-                  />
-                </div>
-
-                <div className="mb-8">
-                  <label
-                    htmlFor="message"
-                    className="block text-slate-300 mb-3 text-sm"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="Tell me about your project..."
-                    rows={6}
-                    className="w-full px-5 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 resize-none"
-                    required
-                  ></textarea>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting || isSubmitted}
-                  className={`w-full group relative px-8 py-4 ${
-                    isSubmitted 
-                      ? "bg-green-600" 
-                      : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
-                  } text-white rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 overflow-hidden disabled:opacity-70`}
-                >
-                  {!isSubmitted && (
+                <AnimatePresence mode="wait">
+                  {status === "sent" ? (
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                      animate={{
-                        x: ["-100%", "100%"],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    />
-                  )}
-                  <span className="relative z-10">
-                    {isSubmitting ? "Sending..." : isSubmitted ? "Message Sent!" : "Send Message"}
-                  </span>
-                  {isSubmitted ? (
-                    <CheckCircle className="w-5 h-5 relative z-10" />
+                      key="success"
+                      initial={{ opacity: 0, scale: 0.85 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.85 }}
+                      className="flex flex-col items-center justify-center py-12 text-center"
+                    >
+                      <motion.div
+                        className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4"
+                        style={{ background: "rgba(139,92,246,0.2)" }}
+                        animate={{ rotate: [0, 360] }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        ✅
+                      </motion.div>
+                      <h3 className="text-white text-xl font-bold mb-2">Message Sent!</h3>
+                      <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+                        Thank you! I'll get back to you soon.
+                      </p>
+                    </motion.div>
                   ) : (
-                    <Send className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+                    <motion.form
+                      key="form"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      onSubmit={handleSubmit}
+                      className="space-y-5"
+                    >
+                      <FloatingInput label="Your Name" name="name" placeholder="John Doe" value={formData.name} onChange={handleChange} />
+                      <FloatingInput label="Your Email" type="email" name="email" placeholder="john@example.com" value={formData.email} onChange={handleChange} />
+                      <FloatingInput label="Message" name="message" placeholder="Tell me about your project..." value={formData.message} onChange={handleChange} textarea />
+                      <RippleButton type="submit" disabled={status === "sending"}>
+                        {status === "sending" ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <motion.div
+                              className="w-4 h-4 rounded-full border-2"
+                              style={{ borderColor: "rgba(255,255,255,0.2)", borderTopColor: "#fff" }}
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                            />
+                            Sending...
+                          </span>
+                        ) : (
+                          "Send Message →"
+                        )}
+                      </RippleButton>
+                    </motion.form>
                   )}
-                </button>
-              </form>
-            </motion.div>
-          </div>
-        </motion.div>
+                </AnimatePresence>
+              </motion.div>
+            </TiltCard>
+          </ScrollReveal>
+        </div>
       </div>
 
       {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.8, delay: 0.8 }}
-        className="mt-32 text-center relative z-10"
-      >
-        <div className="border-t border-slate-800 pt-8">
-          <p className="text-slate-500">
-            © 2026 Azwad Jilani. Crafted with passion and code.
-          </p>
-        </div>
-      </motion.footer>
+      <ScrollReveal className="mt-20 text-center">
+        <motion.div
+          className="w-16 h-px mx-auto mb-6 rounded-full"
+          style={{ background: "linear-gradient(90deg, transparent, rgba(139,92,246,0.5), transparent)" }}
+        />
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.28)" }}>
+          © 2026 Azwad Jilani. Crafted with passion and code.
+        </p>
+      </ScrollReveal>
     </section>
   );
 }
