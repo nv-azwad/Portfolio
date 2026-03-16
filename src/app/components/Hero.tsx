@@ -3,9 +3,9 @@ import { useState, useEffect, useRef, ReactNode } from "react";
 import { Github, Linkedin, Mail } from "lucide-react";
 
 const roles = [
-  "Cybersecurity Expert",
+  "Cybersecurity Enthusiast",
   "Full Stack Developer",
-  "Ethical Hacker",
+  "Security Researcher",
   "Problem Solver",
 ];
 

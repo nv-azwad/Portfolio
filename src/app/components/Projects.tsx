@@ -267,22 +267,34 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
                   )}
 
                   {/* Hover overlay with "View Project" label */}
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center rounded-2xl z-10"
-                    style={{ background: `rgba(0,0,0,0.45)`, backdropFilter: "blur(2px)" }}
-                    animate={{ opacity: hovered ? 1 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <motion.span
-                      className="px-4 py-2 rounded-full text-xs font-medium"
-                      style={{ background: project.accent, color: "#fff" }}
-                      initial={{ scale: 0.7 }}
-                      animate={{ scale: hovered ? 1 : 0.7 }}
-                      transition={{ duration: 0.25 }}
+                  {project.liveLink ? (
+                    <motion.a
+                      href={project.liveLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="absolute inset-0 flex items-center justify-center rounded-2xl z-10"
+                      style={{ background: `rgba(0,0,0,0.45)`, backdropFilter: "blur(2px)" }}
+                      animate={{ opacity: hovered ? 1 : 0 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      View Project ↗
-                    </motion.span>
-                  </motion.div>
+                      <motion.span
+                        className="px-4 py-2 rounded-full text-xs font-medium"
+                        style={{ background: project.accent, color: "#fff" }}
+                        initial={{ scale: 0.7 }}
+                        animate={{ scale: hovered ? 1 : 0.7 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        View Project ↗
+                      </motion.span>
+                    </motion.a>
+                  ) : (
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center rounded-2xl z-10 pointer-events-none"
+                      style={{ background: `rgba(0,0,0,0.45)`, backdropFilter: "blur(2px)" }}
+                      animate={{ opacity: hovered ? 1 : 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
                 </div>
               </TiltCard>
             </div>
