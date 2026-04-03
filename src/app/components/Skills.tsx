@@ -5,36 +5,47 @@ import { TiltCard } from "./TiltCard";
 
 const skillCategories = [
   {
-    icon: "🛡️",
-    title: "Cybersecurity",
-    color: "#8b5cf6",
-    skills: [
-      { name: "Penetration Testing", level: 85 },
-      { name: "Kali Linux", level: 88 },
-      { name: "Risk Assessment", level: 82 },
-      { name: "Network Defense", level: 80 },
-    ],
-  },
-  {
-    icon: "💻",
-    title: "Programming",
+    icon: "🎨",
+    title: "Frontend Development",
     color: "#3b82f6",
     skills: [
-      { name: "Python", level: 90 },
-      { name: "JavaScript & TypeScript", level: 88 },
-      { name: "Java & C++", level: 82 },
-      { name: "SQL", level: 85 },
+      { name: "React & Next.js", level: 92 },
+      { name: "React Native & Expo", level: 90 },
+      { name: "TypeScript", level: 90 },
+      { name: "Tailwind CSS", level: 92 },
     ],
   },
   {
-    icon: "🔧",
-    title: "Tools & Technologies",
+    icon: "⚙️",
+    title: "Backend Development",
+    color: "#8b5cf6",
+    skills: [
+      { name: "Node.js & Express", level: 90 },
+      { name: "PostgreSQL & Prisma", level: 88 },
+      { name: "Python & FastAPI", level: 85 },
+      { name: "REST APIs & JWT Auth", level: 92 },
+    ],
+  },
+  {
+    icon: "🤖",
+    title: "Automation & AI",
+    color: "#10b981",
+    skills: [
+      { name: "AI Agents & AI-Assisted Dev", level: 90 },
+      { name: "Anthropic & OpenAI APIs", level: 88 },
+      { name: "N8N & Webhook Integration", level: 85 },
+      { name: "REST API Orchestration", level: 88 },
+    ],
+  },
+  {
+    icon: "🚀",
+    title: "DevOps & Cybersecurity",
     color: "#a855f7",
     skills: [
-      { name: "Git & GitHub", level: 90 },
-      { name: "Google Apps Script", level: 92 },
-      { name: "VPS & cPanel", level: 85 },
-      { name: "Machine Learning", level: 78 },
+      { name: "Docker & CI/CD", level: 85 },
+      { name: "AWS & VPS Deployment", level: 83 },
+      { name: "Kali Linux & Network Defense", level: 85 },
+      { name: "Git & Version Control", level: 92 },
     ],
   },
 ];
@@ -181,7 +192,7 @@ export function Skills() {
           </h2>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
           {skillCategories.map((cat, catIndex) => (
             <ScrollReveal key={cat.title} delay={catIndex * 0.15} direction="up">
               <TiltCard className="rounded-2xl h-full" intensity={7} glowColor={`${cat.color}15`}>
@@ -236,7 +247,7 @@ export function Skills() {
             Also familiar with
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            {["React", "Next.js", "Node.js", "Express", "Docker", "AWS", "Burp Suite", "Metasploit", "Wireshark", "MongoDB"].map((tech, i) => (
+            {["Firebase", "MongoDB", "MySQL", "Google Apps Script", "Software Testing & QA", "Digital Forensics", "Java", "C++", "SSL/HTTPS", "Bug Tracking & Debugging", "Claude Code & Cursor"].map((tech, i) => (
               <TechPill key={tech} tech={tech} index={i} />
             ))}
           </div>

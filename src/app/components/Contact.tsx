@@ -6,7 +6,7 @@ import { TiltCard } from "./TiltCard";
 const contactInfo = [
   { icon: "✉️", label: "Email", value: "jilaniazwad@gmail.com", href: "mailto:jilaniazwad@gmail.com", color: "#8b5cf6" },
   { icon: "📞", label: "Phone", value: "+60 16-612 9670", href: "tel:+60166129670", color: "#3b82f6" },
-  { icon: "📍", label: "Location", value: "Subang Jaya, Malaysia", href: "#", color: "#a855f7" },
+  { icon: "📍", label: "Location", value: "Dhaka, Bangladesh", href: "#", color: "#a855f7" },
 ];
 
 function RippleButton({ children, type = "button", disabled, onClick }: {

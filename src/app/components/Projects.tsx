@@ -24,6 +24,21 @@ const projects = [
   {
     id: 2,
     tag: "Project 2",
+    title: "Gausul Azam Jameh Masjid — Digital Mosque Management System",
+    description:
+      "A full-stack mosque management platform built for Gausul Azam Jameh Masjid (Uttara, Dhaka, Bangladesh). Solo-developed the entire system end-to-end — a Next.js admin dashboard and a cross-platform mobile app (Android + PWA) serving the mosque community. Features include real-time prayer time management with auto-sync via Vercel cron, cross-platform push notifications (FCM + Web Push), full Quran reader with Arabic/Bengali/English translations, Qibla compass, Islamic calendar events, community post moderation, role-based access control, and offline support with network-first caching strategy. The system runs entirely on free tiers with zero recurring cost, serving a real community.",
+    tags: ["Next.js", "React Native", "Expo", "PostgreSQL", "Prisma", "Firebase", "PWA"],
+    images: [
+      "/assets/projects/masjid.png",
+    ],
+    accent: "#059669",
+    hasReport: false,
+    reportLink: undefined,
+    liveLink: "https://gausul-azam-masjid.vercel.app/",
+  },
+  {
+    id: 3,
+    tag: "Project 3",
     title: "CubeXTech Company Website",
     description:
       "Designed and developed the official company website for CubeX Technology, a premium tech solutions provider based in Malaysia. Built with React and modern web technologies, featuring a sleek dark theme with teal gradient accents. The website showcases the company's services including CubeX Home residential security, custom software development, and automation systems. Highlights include an animated 3D wireframe cube hero section, smooth scroll animations, responsive design, and a professional contact form with PHP backend.",
@@ -39,8 +54,8 @@ const projects = [
     liveLink: "https://cubextech.net",
   },
   {
-    id: 3,
-    tag: "Project 3",
+    id: 4,
+    tag: "Project 4",
     title: "CubeX Visitor Management System",
     description:
       "Production VMS currently serving 3+ condominiums across Malaysia including PJS 1, MMC Ampang, and Sri Ara Residences. Built with PHP backend and Google Sheets API for data management. Features include multi-property visitor registration with custom branding per site, QR code generation for entry verification, guard verification portal with PIN authentication, resident lookup functionality, automated Telegram notifications to guards, and scheduled daily/monthly PDF reports to property managers via Google Apps Script automation.",
@@ -55,8 +70,8 @@ const projects = [
     liveLink: "https://vms.cubextech.net",
   },
   {
-    id: 4,
-    tag: "Project 4",
+    id: 5,
+    tag: "Project 5",
     title: "CubeXHome — Property Security Platform",
     description:
       "Comprehensive property security and management platform designed for Malaysian condominiums. The ecosystem includes 3 role-based web dashboards (Security Head with teal theme, Site Management with purple theme, Super Admin with crimson theme) and a multi-role mobile app serving Residents, Guards, and Security Heads. Key features include OTP + biometric authentication, real-time guard tracking with patrol verification, incident management system, resident billing & feedback, visitor pre-registration, emergency SOS alerts, and an automated service killswitch for subscription management. Built with React, Node.js, PostgreSQL, Prisma, and React Native/Expo.",
@@ -78,8 +93,8 @@ const projects = [
     liveLink: undefined,
   },
   {
-    id: 5,
-    tag: "Project 5",
+    id: 6,
+    tag: "Project 6",
     title: "UAV Communication & Mobility (FYP)",
     description:
       "Final Year Project implementing reinforcement learning algorithms and Terahertz (THz) communication for enhanced UAV communication and mobility in Flying Ad-hoc Networks (FANETs). Using NS3 network simulator to create real-life simulations of UAV mobility models. Research focuses on optimizing communication reliability, analyzing network security vulnerabilities, and improving data transmission efficiency in dynamic aerial environments.",
@@ -367,7 +382,7 @@ export function Projects() {
             />
           </h2>
           <p className="mt-4 text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
-            Production systems serving real clients across Malaysia
+            Production systems serving real users and clients
           </p>
         </ScrollReveal>
 
