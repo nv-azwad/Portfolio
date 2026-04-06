@@ -20,6 +20,7 @@ const projects = [
     hasReport: true,
     reportLink: "/assets/reports/U4B-Case-Study.pdf",
     liveLink: "https://u4b-app--u4bapp.asia-southeast1.hosted.app/login",
+    githubLink: undefined,
   },
   {
     id: 2,
@@ -35,10 +36,27 @@ const projects = [
     hasReport: false,
     reportLink: undefined,
     liveLink: "https://gausul-azam-masjid.vercel.app/",
+    githubLink: undefined,
   },
   {
     id: 3,
     tag: "Project 3",
+    title: "AI Engineering Portfolio",
+    description:
+      "Built a complete AI engineering system from scratch in JavaScript using LangChain and Ollama — fully local, no API keys required. Includes a RAG pipeline that reads any PDF and answers questions with zero hallucination, a hierarchical multi-agent system where a manager agent dynamically routes tasks to specialised worker agents, and an LLM function calling demo with autonomous tool selection. Tested the RAG pipeline on a real 68-page technical document with accurate retrieval.",
+    tags: ["LangChain", "Ollama", "RAG", "Multi-Agent", "Node.js", "JavaScript"],
+    images: [
+      "https://images.unsplash.com/photo-1677442136019-21780ecad995?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    ],
+    accent: "#f59e0b",
+    hasReport: false,
+    reportLink: undefined,
+    liveLink: undefined,
+    githubLink: "https://github.com/nv-azwad/ai-engineering-portfolio",
+  },
+  {
+    id: 4,
+    tag: "Project 4",
     title: "CubeXTech Company Website",
     description:
       "Designed and developed the official company website for CubeX Technology, a premium tech solutions provider based in Malaysia. Built with React and modern web technologies, featuring a sleek dark theme with teal gradient accents. The website showcases the company's services including CubeX Home residential security, custom software development, and automation systems. Highlights include an animated 3D wireframe cube hero section, smooth scroll animations, responsive design, and a professional contact form with PHP backend.",
@@ -52,10 +70,11 @@ const projects = [
     hasReport: false,
     reportLink: undefined,
     liveLink: "https://cubextech.net",
+    githubLink: undefined,
   },
   {
-    id: 4,
-    tag: "Project 4",
+    id: 5,
+    tag: "Project 5",
     title: "CubeX Visitor Management System",
     description:
       "Production VMS currently serving 3+ condominiums across Malaysia including PJS 1, MMC Ampang, and Sri Ara Residences. Built with PHP backend and Google Sheets API for data management. Features include multi-property visitor registration with custom branding per site, QR code generation for entry verification, guard verification portal with PIN authentication, resident lookup functionality, automated Telegram notifications to guards, and scheduled daily/monthly PDF reports to property managers via Google Apps Script automation.",
@@ -68,10 +87,11 @@ const projects = [
     hasReport: false,
     reportLink: undefined,
     liveLink: "https://vms.cubextech.net",
+    githubLink: undefined,
   },
   {
-    id: 5,
-    tag: "Project 5",
+    id: 6,
+    tag: "Project 6",
     title: "CubeXHome — Property Security Platform",
     description:
       "Comprehensive property security and management platform designed for Malaysian condominiums. The ecosystem includes 3 role-based web dashboards (Security Head with teal theme, Site Management with purple theme, Super Admin with crimson theme) and a multi-role mobile app serving Residents, Guards, and Security Heads. Key features include OTP + biometric authentication, real-time guard tracking with patrol verification, incident management system, resident billing & feedback, visitor pre-registration, emergency SOS alerts, and an automated service killswitch for subscription management. Built with React, Node.js, PostgreSQL, Prisma, and React Native/Expo.",
@@ -91,10 +111,11 @@ const projects = [
     hasReport: true,
     reportLink: "/assets/reports/CubeXHome-Case-Study.pdf",
     liveLink: undefined,
+    githubLink: undefined,
   },
   {
-    id: 6,
-    tag: "Project 6",
+    id: 7,
+    tag: "Project 7",
     title: "UAV Communication & Mobility (FYP)",
     description:
       "Final Year Project implementing reinforcement learning algorithms and Terahertz (THz) communication for enhanced UAV communication and mobility in Flying Ad-hoc Networks (FANETs). Using NS3 network simulator to create real-life simulations of UAV mobility models. Research focuses on optimizing communication reliability, analyzing network security vulnerabilities, and improving data transmission efficiency in dynamic aerial environments.",
@@ -106,20 +127,28 @@ const projects = [
     hasReport: true,
     reportLink: "/assets/reports/UAV_FYP_Report.pdf",
     liveLink: undefined,
+    githubLink: undefined,
   },
 ];
 
 function GlowBorder({ children, color, active }: { children: React.ReactNode; color: string; active: boolean }) {
   return (
-    <div className="relative rounded-3xl p-[1.5px] overflow-hidden">
-      <motion.div
-        className="absolute inset-0 rounded-3xl"
-        style={{ background: `conic-gradient(from 0deg, ${color}, transparent 40%, ${color}80 60%, transparent 80%, ${color})` }}
-        animate={active ? { rotate: [0, 360] } : { rotate: 0 }}
-        transition={active ? { duration: 3, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
-      />
-      <div className="relative rounded-3xl overflow-hidden">{children}</div>
-    </div>
+    <motion.div
+      className="relative rounded-3xl p-[1.5px]"
+      style={{ overflow: "visible" }}
+      animate={active ? { boxShadow: `0 0 30px 6px ${color}40, 0 0 60px 12px ${color}20` } : { boxShadow: `0 0 0px 0px ${color}00` }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="relative rounded-3xl overflow-hidden">
+        <motion.div
+          className="absolute inset-0 rounded-3xl"
+          style={{ background: `conic-gradient(from 0deg, ${color}, transparent 40%, ${color}80 60%, transparent 80%, ${color})` }}
+          animate={active ? { rotate: [0, 360] } : { rotate: 0 }}
+          transition={active ? { duration: 3, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
+        />
+        <div className="relative rounded-3xl overflow-hidden">{children}</div>
+      </div>
+    </motion.div>
   );
 }
 
@@ -208,7 +237,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
           {/* Ambient glow */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: `radial-gradient(ellipse at ${isEven ? "90% 10%" : "10% 10%"}, ${project.accent}0d 0%, transparent 60%)` }}
+            style={{ background: `radial-gradient(ellipse at ${isEven ? "90% 10%" : "10% 10%"}, ${project.accent}25 0%, ${project.accent}08 40%, transparent 70%)` }}
             animate={{ opacity: hovered ? 1 : 0 }}
             transition={{ duration: 0.4 }}
           />
@@ -341,6 +370,11 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
                 {project.liveLink && (
                   <ProjectButton href={project.liveLink} accent={project.accent} primary>
                     🌐 View Live ↗
+                  </ProjectButton>
+                )}
+                {project.githubLink && (
+                  <ProjectButton href={project.githubLink} accent={project.accent} primary={!project.liveLink}>
+                    💻 GitHub ↗
                   </ProjectButton>
                 )}
                 {project.hasReport && project.reportLink && (
