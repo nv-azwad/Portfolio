@@ -437,7 +437,7 @@ export function Hero() {
               <img
                 src="/assets/profile/azwad-profile.jpg"
                 alt="Azwad Jilani"
-                className="w-full h-full object-cover object-top scale-125"
+                className="w-full h-full object-cover object-bottom scale-125"
               />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,13,43,0.55) 0%, transparent 60%)" }} />
             </motion.div>
