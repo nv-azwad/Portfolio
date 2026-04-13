@@ -5,6 +5,8 @@ import { Github, Linkedin, Mail } from "lucide-react";
 const roles = [
   "Cybersecurity Enthusiast",
   "Full Stack Developer",
+  "Automation Specialist",
+  "AI Engineer",
   "Security Researcher",
   "Problem Solver",
 ];
