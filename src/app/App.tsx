@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "motion/react";
-import { CustomCursor } from "./components/CustomCursor";
-import { Loader } from "./components/Loader";
+import { CustomCursor } from "@/app/components/CustomCursor";
+import { Loader } from "@/app/components/Loader";
 import { Navbar } from "@/app/components/Navbar";
 import { Hero } from "@/app/components/Hero";
 import { About } from "@/app/components/About";
@@ -12,12 +12,19 @@ import { Contact } from "@/app/components/Contact";
 export default function App() {
   const [loading, setLoading] = useState(true);
 
-  // Hide default cursor on desktop
+  // Hide default cursor on desktop so the custom cursor is the only one visible.
+  // Inputs/textareas/selectable text keep their native cursors so the form
+  // and any selectable copy remain usable.
   useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = `
       * { cursor: none !important; }
-      @media (max-width: 768px) { * { cursor: auto !important; } }
+      input, textarea, select, [contenteditable="true"] { cursor: text !important; }
+      input[type="checkbox"], input[type="radio"], input[type="submit"], input[type="button"], input[type="reset"] { cursor: none !important; }
+      @media (max-width: 768px) {
+        * { cursor: auto !important; }
+        input, textarea, select, [contenteditable="true"] { cursor: text !important; }
+      }
     `;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
@@ -26,21 +33,22 @@ export default function App() {
   return (
     <div
       className="relative min-h-screen"
-      style={{ background: "#06061a", fontFamily: "'Inter', sans-serif" }}
+      style={{
+        background: "var(--bg-primary)",
+        fontFamily: "var(--font-body)",
+        color: "var(--text-primary)",
+      }}
     >
-      {/* Custom cursor - desktop only */}
       <div className="hidden md:block">
         <CustomCursor />
       </div>
 
-      {/* Loader */}
       <AnimatePresence>
         {loading && (
           <Loader key="loader" onComplete={() => setLoading(false)} />
         )}
       </AnimatePresence>
 
-      {/* Main content */}
       {!loading && (
         <>
           <Navbar />

@@ -1,12 +1,108 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Github, Linkedin, Mail, ArrowUp, FileDown } from "lucide-react";
 import { ScrollReveal } from "./ScrollReveal";
 import { TiltCard } from "./TiltCard";
+import { useCopyEmail } from "./useCopyEmail";
+
+const footerSocials = [
+  { icon: Github, label: "GitHub", href: "https://github.com/nv-azwad" },
+  { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com/in/azwad-jilani/" },
+  { icon: Mail, label: "Email", href: "mailto:jilaniazwad@gmail.com" },
+];
+
+const FOOTER_SOCIAL_STYLE: React.CSSProperties = {
+  width: 38,
+  height: 38,
+  borderRadius: 10,
+  background: "rgba(255,255,255,0.03)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  color: "rgba(255,255,255,0.5)",
+};
+
+const FOOTER_SOCIAL_HOVER = {
+  y: -3,
+  scale: 1.08,
+  borderColor: "rgba(139,92,246,0.45)",
+  color: "#c084fc",
+  backgroundColor: "rgba(139,92,246,0.10)",
+};
+
+function FooterSocialIcon({ social }: { social: (typeof footerSocials)[number] }) {
+  const Icon = social.icon;
+  const isMail = social.href.startsWith("mailto:");
+  const email = isMail ? social.href.replace("mailto:", "") : "";
+  const { copied, copy } = useCopyEmail(email);
+
+  if (isMail) {
+    return (
+      <motion.button
+        type="button"
+        onClick={copy}
+        title={copied ? "Email copied!" : "Copy email"}
+        data-cursor={copied ? "Copied!" : social.label}
+        className="relative flex items-center justify-center"
+        style={FOOTER_SOCIAL_STYLE}
+        whileHover={FOOTER_SOCIAL_HOVER}
+        transition={{ duration: 0.25 }}
+      >
+        <Icon className="w-[16px] h-[16px]" />
+        <AnimatePresence>
+          {copied && (
+            <motion.span
+              initial={{ opacity: 0, y: 6, scale: 0.85 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.85 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                position: "absolute",
+                bottom: "calc(100% + 8px)",
+                left: "50%",
+                translateX: "-50%",
+                padding: "5px 10px",
+                borderRadius: 8,
+                fontFamily: "var(--font-display)",
+                fontSize: "0.62rem",
+                fontWeight: 700,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "#c4b5fd",
+                background: "rgba(10,10,36,0.95)",
+                border: "1px solid rgba(139,92,246,0.5)",
+                whiteSpace: "nowrap",
+                pointerEvents: "none",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.4)",
+              }}
+            >
+              Copied!
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.button>
+    );
+  }
+
+  return (
+    <motion.a
+      href={social.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={social.label}
+      data-cursor={social.label}
+      className="flex items-center justify-center"
+      style={FOOTER_SOCIAL_STYLE}
+      whileHover={FOOTER_SOCIAL_HOVER}
+      transition={{ duration: 0.25 }}
+    >
+      <Icon className="w-[16px] h-[16px]" />
+    </motion.a>
+  );
+}
 
 const contactInfo = [
-  { icon: "✉️", label: "Email", value: "jilaniazwad@gmail.com", href: "mailto:jilaniazwad@gmail.com", color: "#8b5cf6" },
+  { icon: "✉️", label: "Email", value: "jilaniazwad@gmail.com", href: "mailto:jilaniazwad@gmail.com", color: "#7c3aed" },
   { icon: "📞", label: "Phone", value: "+60 16-612 9670", href: "tel:+60166129670", color: "#3b82f6" },
-  { icon: "📍", label: "Location", value: "Dhaka, Bangladesh", href: "#", color: "#a855f7" },
+  { icon: "📍", label: "Location", value: "Dhaka, Bangladesh", href: "#", color: "#a78bfa" },
 ];
 
 function RippleButton({ children, type = "button", disabled, onClick }: {
@@ -135,9 +231,17 @@ function FloatingInput({ label, type = "text", name, placeholder, value, onChang
 
 function ContactCard({ info, index }: { info: (typeof contactInfo)[0]; index: number }) {
   const [hovered, setHovered] = useState(false);
+  const isEmail = info.label === "Email";
+  const { copied, copy } = useCopyEmail(isEmail ? info.value : "");
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (isEmail) copy(e);
+  };
+
   return (
     <motion.a
       href={info.href}
+      onClick={handleClick}
       className="relative flex items-center gap-4 p-4 rounded-2xl overflow-hidden group"
       style={{ background: "rgba(255,255,255,0.03)", border: `1px solid ${hovered ? `${info.color}45` : "rgba(255,255,255,0.07)"}`, transition: "border-color 0.25s" }}
       initial={{ opacity: 0, x: -20 }}
@@ -147,7 +251,7 @@ function ContactCard({ info, index }: { info: (typeof contactInfo)[0]; index: nu
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       whileHover={{ x: 5, boxShadow: `0 0 24px ${info.color}14` }}
-      data-cursor="Contact"
+      data-cursor={isEmail ? (copied ? "Copied!" : "Copy") : "Contact"}
     >
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -167,9 +271,33 @@ function ContactCard({ info, index }: { info: (typeof contactInfo)[0]; index: nu
 
       <div className="relative z-10 flex-1 min-w-0">
         <p className="text-xs mb-0.5" style={{ color: "rgba(255,255,255,0.38)" }}>{info.label}</p>
-        <p className="text-sm truncate" style={{ color: hovered ? "#fff" : "rgba(255,255,255,0.78)", transition: "color 0.2s" }}>
-          {info.value}
-        </p>
+        <AnimatePresence mode="wait" initial={false}>
+          {copied ? (
+            <motion.p
+              key="copied"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="text-sm truncate"
+              style={{ color: info.color, fontWeight: 600 }}
+            >
+              Email copied to clipboard ✓
+            </motion.p>
+          ) : (
+            <motion.p
+              key="value"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="text-sm truncate"
+              style={{ color: hovered ? "#fff" : "rgba(255,255,255,0.78)", transition: "color 0.2s" }}
+            >
+              {info.value}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
 
       <motion.div
@@ -211,8 +339,7 @@ export function Contact() {
       } else {
         setStatus("idle");
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
+    } catch {
       setStatus("idle");
     }
   };
@@ -221,7 +348,10 @@ export function Contact() {
     <section
       id="contact"
       className="relative py-24 overflow-hidden"
-      style={{ background: "linear-gradient(180deg, #080818 0%, #06061a 100%)" }}
+      style={{
+        background:
+          "linear-gradient(180deg, #0a0a24 0%, #06061a 100%)",
+      }}
     >
       <div
         className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] pointer-events-none"
@@ -235,7 +365,7 @@ export function Contact() {
             Let's Work Together
             <motion.div
               className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-px rounded-full"
-              style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, #3b82f6, transparent)" }}
+              style={{ background: "linear-gradient(90deg, transparent, #7c3aed, #3b82f6, transparent)" }}
               initial={{ width: 0 }} whileInView={{ width: "60%" }} viewport={{ once: true }}
               transition={{ duration: 1, delay: 0.3 }}
             />
@@ -345,14 +475,89 @@ export function Contact() {
       </div>
 
       {/* Footer */}
-      <ScrollReveal className="mt-20 text-center">
-        <motion.div
-          className="w-16 h-px mx-auto mb-6 rounded-full"
-          style={{ background: "linear-gradient(90deg, transparent, rgba(139,92,246,0.5), transparent)" }}
-        />
-        <p className="text-xs" style={{ color: "rgba(255,255,255,0.28)" }}>
-          © 2026 Azwad Jilani. Crafted with passion and code.
-        </p>
+      <ScrollReveal className="mt-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            className="w-full h-px mx-auto mb-10 rounded-full"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(139,92,246,0.35), rgba(59,130,246,0.35), rgba(139,92,246,0.35), transparent)" }}
+          />
+
+          <div className="flex flex-col items-center gap-7">
+            {/* Socials row */}
+            <div className="flex gap-3">
+              {footerSocials.map((s) => (
+                <FooterSocialIcon key={s.label} social={s} />
+              ))}
+            </div>
+
+            {/* Download CV — primary footer CTA */}
+            <motion.a
+              href="/assets/Azwad-Jilani-CV.pdf"
+              download="Azwad-Jilani-CV.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative flex items-center gap-2.5 px-6 py-3 rounded-xl overflow-hidden"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                fontSize: "0.8rem",
+                letterSpacing: "0.04em",
+                color: "#fff",
+                background: "linear-gradient(135deg, rgba(139,92,246,0.18), rgba(59,130,246,0.14))",
+                border: "1px solid rgba(139,92,246,0.4)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+              }}
+              whileHover={{
+                scale: 1.04,
+                boxShadow: "0 0 28px rgba(139,92,246,0.35), 0 8px 24px rgba(0,0,0,0.3)",
+                borderColor: "rgba(167,139,250,0.7)",
+              }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ duration: 0.25 }}
+              data-cursor="Download"
+            >
+              <FileDown className="w-[15px] h-[15px]" style={{ color: "#c4b5fd" }} />
+              <span>Download CV</span>
+            </motion.a>
+
+            {/* Back to top */}
+            <motion.button
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="flex items-center gap-2 px-4 py-2 rounded-full"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 600,
+                fontSize: "0.65rem",
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,0.42)",
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.07)",
+              }}
+              whileHover={{
+                color: "#fff",
+                borderColor: "rgba(139,92,246,0.4)",
+                backgroundColor: "rgba(139,92,246,0.06)",
+              }}
+              whileTap={{ scale: 0.96 }}
+              data-cursor="Top"
+            >
+              <ArrowUp className="w-[12px] h-[12px]" />
+              Back to top
+            </motion.button>
+
+            {/* Credits */}
+            <div className="flex flex-col items-center gap-1.5 text-center">
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.32)" }}>
+                Built with React, TypeScript & motion — designed and developed by Azwad.
+              </p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.18)" }}>
+                © 2026 Azwad Jilani. All rights reserved.
+              </p>
+            </div>
+          </div>
+        </div>
       </ScrollReveal>
     </section>
   );

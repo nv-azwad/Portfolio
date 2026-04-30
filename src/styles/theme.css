@@ -2,80 +2,156 @@
 
 :root {
   --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
+  /* ─── v3 design tokens (handoff palette: midnight-purple + violet/blue) ─── */
+  /* Backgrounds */
+  --bg-primary:    #06061a;
+  --bg-secondary:  #0a0a24;
+  --bg-tertiary:   #0d0d2b;
+  --bg-quaternary: #080818;
+  --bg-card:       rgba(255, 255, 255, 0.03);
+  --bg-card-hover: rgba(255, 255, 255, 0.05);
+
+  /* Text */
+  --text-primary:   #ffffff;
+  --text-secondary: rgba(255,255,255,0.70);
+  --text-body:      rgba(255,255,255,0.58);
+  --text-muted:     rgba(255,255,255,0.45);
+  --text-faint:     rgba(255,255,255,0.38);
+  --text-ghost:     rgba(255,255,255,0.28);
+
+  /* Primary accent — Electric Violet */
+  --accent-violet:        #7c3aed;
+  --accent-violet-mid:    #8b5cf6;
+  --accent-violet-light:  #a78bfa;
+  --accent-violet-deep:   #6d28d9;
+  --accent-violet-soft:   rgba(139,92,246,0.12);
+  --accent-violet-border: rgba(139,92,246,0.30);
+  --accent-violet-glow:   rgba(139,92,246,0.50);
+  --accent-lavender:      #a78bfa;
+  --accent-lilac:         #c084fc;
+
+  /* Secondary accent — Royal Blue (per handoff) */
+  --accent-blue:        #3b82f6;
+  --accent-blue-light:  #60a5fa;
+  --accent-blue-soft:   rgba(59,130,246,0.14);
+  --accent-blue-border: rgba(59,130,246,0.30);
+
+  /* Tertiary accent — Amethyst */
+  --accent-amethyst:      #a855f7;
+  --accent-amethyst-soft: rgba(168,85,247,0.14);
+
+  /* Contrast accents — used as section pillars (per handoff) */
+  /* Mint: Skills section dominant accent. Soft, "expensive" — not status-green. */
+  --accent-mint:        #5DCAA5;
+  --accent-mint-light:  #86efbe;
+  --accent-mint-deep:   #2c9a76;
+  --accent-mint-soft:   rgba(93,202,165,0.12);
+  --accent-mint-border: rgba(93,202,165,0.30);
+  --accent-mint-glow:   rgba(93,202,165,0.50);
+
+  /* Peach: Projects section warm contrast. Reads as warm light, not warning. */
+  --accent-peach:        #F0997B;
+  --accent-peach-light:  #ffc0a8;
+  --accent-peach-deep:   #d97a5a;
+  --accent-peach-soft:   rgba(240,153,123,0.12);
+  --accent-peach-border: rgba(240,153,123,0.30);
+  --accent-peach-glow:   rgba(240,153,123,0.50);
+
+  /* Legacy cyan aliases — point at blue so existing references stay working
+     while we migrate. New code should use --accent-blue / --accent-blue-light. */
+  --accent-cyan:        var(--accent-blue);
+  --accent-cyan-light:  var(--accent-blue-light);
+  --accent-cyan-soft:   var(--accent-blue-soft);
+  --accent-cyan-border: var(--accent-blue-border);
+
+  /* Status */
+  --accent-green:  #10b981;
+  --status-green:  #22c55e;
+  --status-green-glow: rgba(34,197,94,0.7);
+
+  /* Borders */
+  --border-subtle: rgba(255,255,255,0.07);
+  --border-faint:  rgba(255,255,255,0.05);
+  --border-medium: rgba(255,255,255,0.10);
+  --border-bright: rgba(255,255,255,0.15);
+
+  /* Gradients */
+  --grad-main:        linear-gradient(135deg, #7c3aed, #3b82f6);
+  --grad-violet-deep: linear-gradient(135deg, #7c3aed, #6d28d9);
+  --grad-violet-blue: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  --grad-text:        linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #8b5cf6 100%);
+  --grad-text-hero:   linear-gradient(135deg, #60a5fa, #a78bfa, #8b5cf6);
+  --grad-hero:        linear-gradient(135deg, #06061a 0%, #0d0d2b 40%, #1a0a2e 70%, #2d1654 100%);
+  --grad-section-a:   linear-gradient(180deg, #0d0d2b 0%, #080818 100%);
+  --grad-section-b:   linear-gradient(180deg, #080818 0%, #0d0d2b 100%);
+  --grad-contact:     linear-gradient(180deg, #080818 0%, #06061a 100%);
+  --grad-shine:       linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.22) 50%, transparent 70%);
+  --grad-underline:   linear-gradient(90deg, transparent, #8b5cf6, #3b82f6, transparent);
+
+  /* Section-temperature backgrounds */
+  --bg-section-warm:  linear-gradient(180deg, #1a0a2e 0%, #1f0f24 50%, #1a0a2e 100%);
+  --bg-section-mint:  linear-gradient(180deg, #0a2820 0%, #061d18 50%, #061a1f 100%);
+  --grad-mint-violet: linear-gradient(90deg, transparent, #5DCAA5, #8b5cf6, transparent);
+  --grad-mint:        linear-gradient(135deg, #5DCAA5, #2c9a76);
+  --grad-peach:       linear-gradient(135deg, #F0997B, #d97a5a);
+
+  /* Easing */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snappy: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Glows */
+  --glow-violet-sm: 0 0 16px rgba(139,92,246,0.40);
+  --glow-violet-md: 0 0 30px rgba(139,92,246,0.50);
+  --glow-violet-lg: 0 0 60px rgba(139,92,246,0.25);
+  --glow-blue-sm:   0 0 16px rgba(59,130,246,0.40);
+  --glow-input:     0 0 0 3px rgba(139,92,246,0.10), 0 0 22px rgba(139,92,246,0.12);
+
+  /* Fonts (handoff: Geist + Geist Mono) */
+  --font-display: 'Geist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body:    'Geist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:    'Geist Mono', 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+  /* shadcn legacy (kept for any base components) */
+  --background: #06061a;
+  --foreground: #ffffff;
+  --card: #0a0a24;
+  --card-foreground: #ffffff;
+  --popover: #0a0a24;
+  --popover-foreground: #ffffff;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255,255,255,0.04);
+  --secondary-foreground: #ffffff;
+  --muted: rgba(255,255,255,0.04);
+  --muted-foreground: rgba(255,255,255,0.58);
+  --accent: rgba(139,92,246,0.12);
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255,255,255,0.07);
+  --input: transparent;
+  --input-background: rgba(255,255,255,0.04);
+  --switch-background: rgba(255,255,255,0.10);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --ring: rgba(139,92,246,0.65);
+  --chart-1: #7c3aed;
+  --chart-2: #3b82f6;
+  --chart-3: #a78bfa;
+  --chart-4: #60a5fa;
+  --chart-5: #a855f7;
+  --radius: 0.75rem;
+  --sidebar: #0a0a24;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #7c3aed;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(124,58,237,0.10);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255,255,255,0.06);
+  --sidebar-ring: rgba(124,58,237,0.65);
 }
 
 @theme inline {
@@ -124,59 +200,123 @@
     @apply border-border outline-ring/50;
   }
 
-  body {
-    @apply bg-background text-foreground;
-  }
-
-  /**
-  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
-  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
-  */
-
   html {
     font-size: var(--font-size);
     scroll-behavior: smooth;
+    background: var(--bg-primary);
   }
 
-  h1 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  h2 {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+  h1, h2, h3, h4, h5, h6, nav, button, .ds-heading {
+    font-family: var(--font-display);
   }
 
-  h3 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.4);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(124,58,237,0.55);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(124,58,237,0.75);
+  }
+}
+
+/* ─── Hero entrance keyframes (CRITICAL: CSS, not JS) ─── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes word-up {
+  from { opacity: 0; transform: translateY(105%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in-scale {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer-pos {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.4); }
+}
+@keyframes glow-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.55; }
+  50%      { transform: scale(1.18); opacity: 0.95; }
+}
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.hero-entry {
+  opacity: 0;
+  animation-fill-mode: both;
+}
+.hero-entry-fadeup    { animation: fade-up 0.85s var(--ease-out) both; }
+.hero-entry-wordup    { animation: word-up 0.90s var(--ease-out) both; }
+.hero-entry-fadescale { animation: fade-in-scale 1.00s var(--ease-out) both; }
+
+/* Reveal-on-scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(44px);
+  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+}
+.reveal-left  { opacity: 0; transform: translateX(-44px); transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out); }
+.reveal-right { opacity: 0; transform: translateX(44px); transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out); }
+.reveal.visible,
+.reveal-left.visible,
+.reveal-right.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────
+   Honors the OS-level "Reduce Motion" preference. Kills infinite
+   keyframe loops (particles, glow-breathe, shimmer, float, blink,
+   pulse) and shortens entrance animations to a near-instant fade.
+   Hover/focus transitions are preserved — those are user-initiated. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
   }
 
-  h4 {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+  html {
+    scroll-behavior: auto !important;
   }
 
-  label {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  button {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  input {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
+  /* Restore visibility for entrance helpers — they rely on animation
+     to fade in, but with animations killed they'd otherwise stay hidden. */
+  .hero-entry,
+  .reveal,
+  .reveal-left,
+  .reveal-right {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

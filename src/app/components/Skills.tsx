@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { ScrollReveal } from "./ScrollReveal";
 import { TiltCard } from "./TiltCard";
 
+// Skills section uses an alternating cyan/lavender contrast accent system:
+// adjacent categories swap hues so the grid reads as a rhythmic two-tone
+// pattern (matches the design reference screenshot).
 const skillCategories = [
   {
     icon: "🎨",
     title: "Frontend Development",
-    color: "#3b82f6",
+    color: "#a78bfa",      // lavender
     skills: [
       { name: "React & Next.js", level: 92 },
       { name: "React Native & Expo", level: 90 },
@@ -18,7 +21,7 @@ const skillCategories = [
   {
     icon: "⚙️",
     title: "Backend Development",
-    color: "#8b5cf6",
+    color: "#22D3EE",      // cyan
     skills: [
       { name: "Node.js & Express", level: 90 },
       { name: "PostgreSQL & Prisma", level: 88 },
@@ -29,7 +32,7 @@ const skillCategories = [
   {
     icon: "🤖",
     title: "Automation & AI",
-    color: "#10b981",
+    color: "#22D3EE",      // cyan
     skills: [
       { name: "AI Agents & AI-Assisted Dev", level: 90 },
       { name: "Anthropic & OpenAI APIs", level: 88 },
@@ -40,7 +43,7 @@ const skillCategories = [
   {
     icon: "🚀",
     title: "DevOps & Cybersecurity",
-    color: "#a855f7",
+    color: "#a78bfa",      // lavender
     skills: [
       { name: "Docker & CI/CD", level: 85 },
       { name: "AWS & VPS Deployment", level: 83 },
@@ -137,8 +140,8 @@ function TechPill({ tech, index }: { tech: string; index: number }) {
       className="relative px-4 py-2 rounded-full text-xs cursor-default overflow-hidden"
       style={{
         background: "rgba(255,255,255,0.04)",
-        border: `1px solid ${hovered ? "rgba(139,92,246,0.45)" : "rgba(255,255,255,0.08)"}`,
-        color: hovered ? "#c4b5fd" : "rgba(255,255,255,0.6)",
+        border: `1px solid ${hovered ? "rgba(34,211,238,0.45)" : "rgba(255,255,255,0.08)"}`,
+        color: hovered ? "#67e8f9" : "rgba(255,255,255,0.6)",
         transition: "border-color 0.2s, color 0.2s",
       }}
       initial={{ opacity: 0, y: 12 }}
@@ -152,7 +155,7 @@ function TechPill({ tech, index }: { tech: string; index: number }) {
     >
       <motion.div
         className="absolute inset-0 rounded-full pointer-events-none"
-        style={{ background: "linear-gradient(90deg, rgba(139,92,246,0.15), rgba(59,130,246,0.1))", originX: 0 }}
+        style={{ background: "linear-gradient(90deg, rgba(34,211,238,0.20), rgba(167,139,250,0.14))", originX: 0 }}
         animate={{ scaleX: hovered ? 1 : 0 }}
         transition={{ duration: 0.22, ease: "easeOut" }}
       />
@@ -162,34 +165,123 @@ function TechPill({ tech, index }: { tech: string; index: number }) {
 }
 
 export function Skills() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Skills rises from below as Projects recedes — completes the immersive
+  // dive between the two sections (no gap, just a continuous handoff).
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "start start"],
+  });
+  const stageRotateX = useTransform(scrollYProgress, [0, 0.6], [9, 0]);
+  const stageTranslateY = useTransform(scrollYProgress, [0, 0.6], [70, 0]);
+  const stageOpacity = useTransform(scrollYProgress, [0, 0.4], [0.45, 1]);
+
   return (
     <section
+      ref={sectionRef}
       id="skills"
       className="relative py-24 overflow-hidden"
-      style={{ background: "linear-gradient(180deg, #0d0d2b 0%, #080818 100%)" }}
+      style={{
+        // Stays in the violet-midnight family — same surface as About/Projects.
+        // The mint temperature comes from accents (bars, icons, label), not the bg.
+        background: "linear-gradient(180deg, #0a0a24 0%, #0d0d2b 50%, #06061a 100%)",
+        perspective: "1400px",
+        perspectiveOrigin: "50% 0%",
+      }}
     >
+      {/* ─── Section-entry choreography ─────────────────────────────
+          As Skills enters the viewport (Projects is dollying away above),
+          three things happen at the top edge to mark the handoff:
+            1. A horizontal cyan beam ignites across the top, sweeps wider,
+               then fades — like a stage light snapping on.
+            2. A soft cyan→lavender bloom blossoms downward from the seam,
+               washing the first ~30% of the section.
+            3. The section header rises behind it (handled below by stage*).
+          All transforms are GPU-only; one-shot, no infinite loops. */}
+      <motion.div
+        aria-hidden
+        className="absolute top-0 left-0 right-0 pointer-events-none"
+        style={{ height: 1, transformOrigin: "center" }}
+        initial={{ scaleX: 0, opacity: 0 }}
+        whileInView={{ scaleX: [0, 1, 1], opacity: [0, 1, 0] }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 1.6, times: [0, 0.4, 1], ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            background:
+              "linear-gradient(90deg, transparent 0%, #22D3EE 35%, #ffffff 50%, #a78bfa 65%, transparent 100%)",
+            boxShadow:
+              "0 0 24px rgba(34,211,238,0.9), 0 0 60px rgba(34,211,238,0.5), 0 0 100px rgba(167,139,250,0.4)",
+            borderRadius: 9999,
+          }}
+        />
+      </motion.div>
+
+      {/* Downward bloom — washes the first 30vh after the beam fires */}
+      <motion.div
+        aria-hidden
+        className="absolute top-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "30vh",
+          background:
+            "linear-gradient(180deg, rgba(34,211,238,0.18) 0%, rgba(167,139,250,0.10) 35%, transparent 100%)",
+          mixBlendMode: "screen",
+        }}
+        initial={{ opacity: 0, scaleY: 0 }}
+        whileInView={{ opacity: [0, 1, 0.45], scaleY: [0, 1, 1] }}
+        viewport={{ once: true, amount: 0.05 }}
+        transition={{ duration: 1.4, delay: 0.25, times: [0, 0.55, 1], ease: [0.16, 1, 0.3, 1] }}
+      />
+
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage: `
-            radial-gradient(circle at 20% 50%, rgba(139,92,246,0.05) 0%, transparent 50%),
-            radial-gradient(circle at 80% 50%, rgba(59,130,246,0.05) 0%, transparent 50%)
+            radial-gradient(circle at 20% 50%, rgba(34,211,238,0.10) 0%, transparent 50%),
+            radial-gradient(circle at 80% 50%, rgba(167,139,250,0.10) 0%, transparent 50%)
           `,
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-6">
-        <ScrollReveal className="text-center mb-16">
-          <span className="text-xs tracking-widest uppercase mb-3 block" style={{ color: "#8b5cf6" }}>Expertise</span>
-          <h2 className="text-4xl lg:text-5xl font-black text-white relative inline-block">
-            Skills &amp; Technologies
+      <motion.div
+        className="max-w-7xl mx-auto px-6"
+        style={{
+          rotateX: stageRotateX,
+          y: stageTranslateY,
+          opacity: stageOpacity,
+          transformOrigin: "50% 0%",
+          transformStyle: "preserve-3d",
+          willChange: "transform, opacity",
+        }}
+      >
+        <ScrollReveal className="text-center mb-16 flex flex-col items-center">
+          <h2 className="text-4xl lg:text-5xl font-black text-white relative inline-block text-center">
+            Skills &amp;{" "}
+            <span
+              style={{
+                background: "linear-gradient(135deg, #a78bfa 0%, #c4b5fd 50%, #a78bfa 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                filter: "drop-shadow(0 0 24px rgba(167,139,250,0.35))",
+              }}
+            >
+              Expertise
+            </span>
             <motion.div
               className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-px rounded-full"
-              style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, #3b82f6, transparent)" }}
+              style={{ background: "linear-gradient(90deg, transparent, #22D3EE, #a78bfa, #22D3EE, transparent)" }}
               initial={{ width: 0 }} whileInView={{ width: "60%" }} viewport={{ once: true }}
               transition={{ duration: 1, delay: 0.3 }}
             />
           </h2>
+          <p className="mt-5 text-sm max-w-xl mx-auto text-center" style={{ color: "rgba(255,255,255,0.55)" }}>
+            A high-precision suite of technical capabilities spanning the entire
+            software development lifecycle, specialized in secure, AI-driven architectures.
+          </p>
         </ScrollReveal>
 
         <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -252,7 +344,7 @@ export function Skills() {
             ))}
           </div>
         </ScrollReveal>
-      </div>
+      </motion.div>
     </section>
   );
 }

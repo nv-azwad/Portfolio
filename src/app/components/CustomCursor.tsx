@@ -27,6 +27,7 @@ export function CustomCursor() {
       const el =
         t.closest("a") ||
         t.closest("button") ||
+        t.closest("[data-cursor]") ||
         (t.tagName === "A" ? t : null) ||
         (t.tagName === "BUTTON" ? t : null);
 
@@ -41,6 +42,7 @@ export function CustomCursor() {
     };
 
     const animate = () => {
+      // 10% lerp per frame for ring
       const lag = 0.1;
       ringPos.current.x += (pos.current.x - ringPos.current.x) * lag;
       ringPos.current.y += (pos.current.y - ringPos.current.y) * lag;
@@ -75,16 +77,21 @@ export function CustomCursor() {
   const isHover = mode === "hover";
   const isClick = mode === "click";
 
-  const ringSize = isHover ? 52 : isClick ? 28 : 36;
-  const ringBorder = isHover ? "2px solid #a855f7" : "1.5px solid rgba(139,92,246,0.7)";
-  const ringBg = isHover ? "rgba(168,85,247,0.08)" : "transparent";
+  // v3 spec: dot 8 default → 14 hover; ring 32 default → 52 hover
+  const dotSize = isHover ? 14 : isClick ? 5 : 8;
+  const ringSize = isHover ? 52 : isClick ? 28 : 32;
+  const ringBorder = isHover
+    ? "1.5px solid rgba(59,130,246,0.6)"
+    : "1.5px solid rgba(139,92,246,0.6)";
+  const ringBg = isHover ? "rgba(59,130,246,0.05)" : "transparent";
   const ringGlow = isHover
-    ? "0 0 24px rgba(168,85,247,0.5), 0 0 48px rgba(168,85,247,0.2)"
+    ? "0 0 24px rgba(59,130,246,0.4)"
     : "0 0 8px rgba(139,92,246,0.3)";
+  const dotBg = isHover ? "#3b82f6" : "#8b5cf6";
 
   return (
     <>
-      {/* Outer lagging ring */}
+      {/* Lagging ring */}
       <div
         ref={ringRef}
         className="fixed top-0 left-0 pointer-events-none z-[9999]"
@@ -96,23 +103,26 @@ export function CustomCursor() {
           background: ringBg,
           boxShadow: ringGlow,
           opacity: isClick ? 0.4 : 1,
-          transition: "width 0.2s ease, height 0.2s ease, border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.15s ease",
+          transition:
+            "width 0.2s ease, height 0.2s ease, border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.15s ease",
         }}
       />
 
-      {/* Sharp inner dot */}
+      {/* Sharp dot — mix-blend-mode: screen */}
       <div
         ref={dotRef}
         className="fixed top-0 left-0 pointer-events-none z-[9999]"
         style={{
-          width: isHover ? 6 : 7,
-          height: isHover ? 6 : 7,
+          width: dotSize,
+          height: dotSize,
           borderRadius: "50%",
-          background: isHover ? "#c084fc" : "#8b5cf6",
+          background: dotBg,
+          mixBlendMode: "screen",
           boxShadow: isHover
-            ? "0 0 10px rgba(192,132,252,1), 0 0 20px rgba(192,132,252,0.4)"
-            : "0 0 6px rgba(139,92,246,0.8)",
-          transition: "width 0.15s ease, height 0.15s ease, background 0.15s ease, box-shadow 0.15s ease",
+            ? "0 0 12px rgba(59,130,246,0.9), 0 0 24px rgba(59,130,246,0.4)"
+            : "0 0 8px rgba(139,92,246,0.9)",
+          transition:
+            "width 0.18s ease, height 0.18s ease, background 0.18s ease, box-shadow 0.18s ease",
         }}
       />
 
@@ -120,13 +130,16 @@ export function CustomCursor() {
       {label && (
         <div
           ref={labelRef}
-          className="fixed top-0 left-0 pointer-events-none z-[9999] px-2 py-0.5 rounded-md text-xs font-medium whitespace-nowrap"
+          className="fixed top-0 left-0 pointer-events-none z-[9999] px-2 py-0.5 rounded-md whitespace-nowrap"
           style={{
-            background: "rgba(139,92,246,0.85)",
+            background: "rgba(124,58,237,0.85)",
             color: "#fff",
             backdropFilter: "blur(6px)",
-            border: "1px solid rgba(168,85,247,0.5)",
+            border: "1px solid rgba(124,58,237,0.5)",
             fontSize: 10,
+            fontFamily: "var(--font-display)",
+            fontWeight: 600,
+            letterSpacing: "0.04em",
           }}
         >
           {label}

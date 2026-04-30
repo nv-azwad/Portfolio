@@ -1,8 +1,16 @@
-import { useState } from "react";
-import { motion } from "motion/react";
+import { useState, useRef } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ScrollReveal } from "./ScrollReveal";
 import { TiltCard } from "./TiltCard";
+import { CodePanel, type CodeLine } from "./CodePanel";
+import { aiPortfolioCode, uavFypCode } from "./codePanelData";
+
+interface ProjectCodePanel {
+  filename: string;
+  language: string;
+  lines: CodeLine[];
+}
 
 const projects = [
   {
@@ -16,7 +24,7 @@ const projects = [
       "/assets/projects/u4b-dashboard.png",
       "/assets/projects/u4b-login.png",
     ],
-    accent: "#8b5cf6",
+    accent: "#7c3aed",
     hasReport: true,
     reportLink: "/assets/reports/U4B-Case-Study.pdf",
     liveLink: "https://u4b-app--u4bapp.asia-southeast1.hosted.app/login",
@@ -45,14 +53,17 @@ const projects = [
     description:
       "Built a complete AI engineering system from scratch in JavaScript using LangChain and Ollama — fully local, no API keys required. Includes a RAG pipeline that reads any PDF and answers questions with zero hallucination, a hierarchical multi-agent system where a manager agent dynamically routes tasks to specialised worker agents, and an LLM function calling demo with autonomous tool selection. Tested the RAG pipeline on a real 68-page technical document with accurate retrieval.",
     tags: ["LangChain", "Ollama", "RAG", "Multi-Agent", "Node.js", "JavaScript"],
-    images: [
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    ],
-    accent: "#f59e0b",
+    images: [],
+    accent: "#a78bfa",
     hasReport: false,
     reportLink: undefined,
     liveLink: undefined,
     githubLink: "https://github.com/nv-azwad/ai-engineering-portfolio",
+    codePanel: {
+      filename: "agent.ts — manager",
+      language: "ts",
+      lines: aiPortfolioCode,
+    } as ProjectCodePanel,
   },
   {
     id: 4,
@@ -120,34 +131,49 @@ const projects = [
     description:
       "Final Year Project implementing reinforcement learning algorithms and Terahertz (THz) communication for enhanced UAV communication and mobility in Flying Ad-hoc Networks (FANETs). Using NS3 network simulator to create real-life simulations of UAV mobility models. Research focuses on optimizing communication reliability, analyzing network security vulnerabilities, and improving data transmission efficiency in dynamic aerial environments.",
     tags: ["Python", "NS3 Simulator", "Machine Learning", "Network Security", "Research"],
-    images: [
-      "https://images.unsplash.com/photo-1473968512647-3e447244af8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    ],
-    accent: "#7c3aed",
+    images: [],
+    accent: "#60a5fa",
     hasReport: true,
     reportLink: "/assets/reports/UAV_FYP_Report.pdf",
+    codePanel: {
+      filename: "fanet_train.py",
+      language: "py",
+      lines: uavFypCode,
+    } as ProjectCodePanel,
     liveLink: undefined,
     githubLink: undefined,
   },
 ];
 
 function GlowBorder({ children, color, active }: { children: React.ReactNode; color: string; active: boolean }) {
+  // Static gradient border that lights up on hover. No infinite rotation.
   return (
     <motion.div
-      className="relative rounded-3xl p-[1.5px]"
+      className="relative rounded-3xl"
       style={{ overflow: "visible" }}
-      animate={active ? { boxShadow: `0 0 30px 6px ${color}40, 0 0 60px 12px ${color}20` } : { boxShadow: `0 0 0px 0px ${color}00` }}
-      transition={{ duration: 0.4 }}
+      animate={
+        active
+          ? { boxShadow: `0 0 60px rgba(124,58,237,0.12), 0 28px 56px rgba(0,0,0,0.45)` }
+          : { boxShadow: `0 12px 32px rgba(0,0,0,0.25)` }
+      }
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="relative rounded-3xl overflow-hidden">
-        <motion.div
-          className="absolute inset-0 rounded-3xl"
-          style={{ background: `conic-gradient(from 0deg, ${color}, transparent 40%, ${color}80 60%, transparent 80%, ${color})` }}
-          animate={active ? { rotate: [0, 360] } : { rotate: 0 }}
-          transition={active ? { duration: 3, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
-        />
-        <div className="relative rounded-3xl overflow-hidden">{children}</div>
-      </div>
+      {/* Static gradient outline — fades in on hover, no rotation */}
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 rounded-3xl pointer-events-none"
+        style={{
+          padding: 1,
+          background: `linear-gradient(135deg, ${color}66 0%, transparent 50%, ${color}33 100%)`,
+          WebkitMask:
+            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+          WebkitMaskComposite: "xor",
+          maskComposite: "exclude",
+        }}
+        animate={{ opacity: active ? 1 : 0 }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      />
+      <div className="relative rounded-3xl overflow-hidden">{children}</div>
     </motion.div>
   );
 }
@@ -215,7 +241,25 @@ function ProjectButton({ children, href, accent, primary }: { children: React.Re
 function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
   const [hovered, setHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [hoverKey, setHoverKey] = useState(0);
+  const imgRef = useRef<HTMLDivElement>(null);
   const isEven = index % 2 === 0;
+
+  const handleImgMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = imgRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    el.style.setProperty("--img-x", `${(-x * 14).toFixed(2)}px`);
+    el.style.setProperty("--img-y", `${(-y * 10).toFixed(2)}px`);
+  };
+  const handleImgLeave = () => {
+    const el = imgRef.current;
+    if (!el) return;
+    el.style.setProperty("--img-x", `0px`);
+    el.style.setProperty("--img-y", `0px`);
+  };
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % project.images.length);
@@ -230,8 +274,11 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
       <GlowBorder color={project.accent} active={hovered}>
         <div
           className="relative p-8 rounded-3xl overflow-hidden"
-          style={{ background: "#09091f", border: "1px solid rgba(255,255,255,0.05)" }}
-          onMouseEnter={() => setHovered(true)}
+          style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)" }}
+          onMouseEnter={() => {
+            setHovered(true);
+            setHoverKey((k) => k + 1);
+          }}
           onMouseLeave={() => setHovered(false)}
         >
           {/* Ambient glow */}
@@ -243,17 +290,41 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
           />
 
           <div className={`flex flex-col ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"} gap-10 items-center`}>
-            {/* Image */}
+            {/* Visual: code panel for code-first projects, image carousel otherwise */}
             <div className="relative flex-shrink-0 w-full lg:w-1/2">
-              <TiltCard className="rounded-2xl overflow-hidden" intensity={5} glowColor={`${project.accent}20`}>
-                <div className="relative overflow-hidden rounded-2xl group/img">
+              {"codePanel" in project && project.codePanel ? (
+                <TiltCard className="rounded-2xl overflow-hidden" intensity={4} glowColor={`${project.accent}25`}>
+                  <CodePanel
+                    filename={project.codePanel.filename}
+                    language={project.codePanel.language}
+                    accent={project.accent}
+                    lines={project.codePanel.lines}
+                  />
+                </TiltCard>
+              ) : (
+              <TiltCard className="rounded-2xl overflow-hidden" intensity={4} glowColor={`${project.accent}20`}>
+                <div
+                  ref={imgRef}
+                  className="relative overflow-hidden rounded-2xl group/img"
+                  style={{ ["--img-x" as string]: "0px", ["--img-y" as string]: "0px" }}
+                  onMouseMove={handleImgMove}
+                  onMouseLeave={handleImgLeave}
+                >
                   <div className="absolute inset-0 z-10 rounded-2xl pointer-events-none" style={{ border: `1px solid ${project.accent}30` }} />
 
                   <img
                     src={project.images[currentImageIndex]}
                     alt={project.title}
+                    width={800}
+                    height={450}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-56 object-cover"
-                    style={{ transform: hovered ? "scale(1.06)" : "scale(1)", transition: "transform 0.6s ease" }}
+                    style={{
+                      transform:
+                        "translate3d(var(--img-x), var(--img-y), 0) scale(1.05)",
+                      transition: "transform 0.55s var(--ease-out)",
+                    }}
                   />
 
                   {/* Gradient overlay */}
@@ -264,19 +335,20 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
                     transition={{ duration: 0.4 }}
                   />
 
-                  {/* Scan line */}
-                  <motion.div
-                    className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden"
-                    animate={{ opacity: hovered ? 1 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
+                  {/* One-shot light sweep — fires once when card enters hover */}
+                  {hovered && (
                     <motion.div
-                      className="absolute w-full"
-                      style={{ height: 2, background: `linear-gradient(90deg, transparent, ${project.accent}, transparent)`, boxShadow: `0 0 12px ${project.accent}` }}
-                      animate={hovered ? { y: ["-10%", "600%"] } : { y: "-10%" }}
-                      transition={hovered ? { duration: 1.4, repeat: Infinity, ease: "linear" } : {}}
+                      key={hoverKey}
+                      className="absolute inset-0 pointer-events-none rounded-2xl"
+                      style={{
+                        background: `linear-gradient(105deg, transparent 35%, ${project.accent}55 50%, transparent 65%)`,
+                        backgroundSize: "220% 100%",
+                      }}
+                      initial={{ backgroundPosition: "200% 0" }}
+                      animate={{ backgroundPosition: "-50% 0" }}
+                      transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
                     />
-                  </motion.div>
+                  )}
 
                   {/* Navigation arrows for multi-image projects */}
                   {project.images.length > 1 && (
@@ -341,6 +413,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
                   )}
                 </div>
               </TiltCard>
+              )}
             </div>
 
             {/* Content */}
@@ -392,40 +465,78 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
 }
 
 export function Projects() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Immersive-dive exit: in the last ~18% of section scroll, the content
+  // recedes (rotateX/translateZ/scale/opacity) so Skills can emerge from
+  // beneath without a gap between sections.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const dollyRotateX = useTransform(scrollYProgress, [0.82, 1], [0, -7]);
+  const dollyTranslateZ = useTransform(scrollYProgress, [0.82, 1], [0, -180]);
+  const dollyScale = useTransform(scrollYProgress, [0.82, 1], [1, 0.93]);
+  const dollyOpacity = useTransform(scrollYProgress, [0.82, 1], [1, 0.35]);
+
   return (
     <section
+      ref={sectionRef}
       id="projects"
-      className="relative py-24 overflow-hidden"
-      style={{ background: "linear-gradient(180deg, #080818 0%, #0d0d2b 100%)" }}
+      className="relative overflow-hidden"
+      style={{
+        // Violet-midnight surface (same as About/Skills) — peach lives in accents.
+        background: "linear-gradient(180deg, #0a0a24 0%, #0d0d2b 50%, #0a0a24 100%)",
+        perspective: "1400px",
+        perspectiveOrigin: "50% 30%",
+      }}
     >
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse, rgba(59,130,246,0.05) 0%, transparent 70%)", filter: "blur(60px)" }}
+        style={{ background: "radial-gradient(ellipse, rgba(240,153,123,0.06) 0%, transparent 70%)", filter: "blur(60px)" }}
       />
 
-      <div className="max-w-7xl mx-auto px-6">
-        <ScrollReveal className="text-center mb-16">
-          <span className="text-xs tracking-widest uppercase mb-3 block" style={{ color: "#8b5cf6" }}>Portfolio</span>
-          <h2 className="text-4xl lg:text-5xl font-black text-white relative inline-block">
-            Featured Projects
-            <motion.div
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-px rounded-full"
-              style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, #3b82f6, transparent)" }}
-              initial={{ width: 0 }} whileInView={{ width: "60%" }} viewport={{ once: true }}
-              transition={{ duration: 1, delay: 0.3 }}
-            />
-          </h2>
-          <p className="mt-4 text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
-            Production systems serving real users and clients
-          </p>
-        </ScrollReveal>
+      <motion.div
+        className="relative py-24"
+        style={{
+          rotateX: dollyRotateX,
+          translateZ: dollyTranslateZ,
+          scale: dollyScale,
+          opacity: dollyOpacity,
+          transformOrigin: "50% 50%",
+          transformStyle: "preserve-3d",
+          willChange: "transform, opacity",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6">
+          <ScrollReveal className="text-center mb-16">
+            <span
+              className="text-xs tracking-widest uppercase mb-3 block"
+              style={{ color: "#F0997B", fontFamily: "var(--font-display)", fontWeight: 700 }}
+            >
+              Work
+            </span>
+            <h2 className="text-4xl lg:text-5xl font-black text-white relative inline-block">
+              Featured Projects
+              <motion.div
+                className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-px rounded-full"
+                style={{ background: "linear-gradient(90deg, transparent, #F0997B, #ffc0a8, #F0997B, transparent)" }}
+                initial={{ width: 0 }} whileInView={{ width: "60%" }} viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.3 }}
+              />
+            </h2>
+            <p className="mt-4 text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
+              Production systems serving real users and clients
+            </p>
+          </ScrollReveal>
 
-        <div className="space-y-10">
-          {projects.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
-          ))}
+          <div className="space-y-10">
+            {projects.map((project, i) => (
+              <ProjectCard key={project.id} project={project} index={i} />
+            ))}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

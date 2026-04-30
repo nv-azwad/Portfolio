@@ -1,13 +1,23 @@
-import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { useEffect, useRef, useState, ReactNode } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
+import { Code2 } from "lucide-react";
 import { ScrollReveal } from "./ScrollReveal";
 import { TiltCard } from "./TiltCard";
+import { WorkspaceSVG } from "./WorkspaceSVG";
 
-const stats = [
+interface Stat {
+  icon: ReactNode;
+  value: number;
+  suffix: string;
+  label: string;
+  color: string;
+}
+
+const stats: Stat[] = [
   { icon: "🏆", value: 2, suffix: "+", label: "Years Experience", color: "#8b5cf6" },
   { icon: "📁", value: 10, suffix: "+", label: "Projects Completed", color: "#3b82f6" },
   { icon: "🎖️", value: 4, suffix: "+", label: "Certifications", color: "#a855f7" },
-  { icon: "</>", value: 50, suffix: "K+", label: "Lines of Code", color: "#60a5fa" },
+  { icon: <Code2 size={20} strokeWidth={2.25} />, value: 50, suffix: "K+", label: "Lines of Code", color: "#60a5fa" },
 ];
 
 const skills = ["Python", "JavaScript", "TypeScript", "Kali Linux", "Penetration Testing", "Machine Learning"];
@@ -70,31 +80,127 @@ function SkillTag({ skill, index }: { skill: string; index: number }) {
 }
 
 export function About() {
+  const sectionRef = useRef<HTMLElement>(null);
+  // Track scroll progress through the boundary between hero exit and about entry.
+  // 'start end' = section top hits viewport bottom; 'end start' = section bottom hits viewport top.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Continuity orb drifts up as you scroll into About — visual heir to the hero's bottom-right cyan orb.
+  const orbY = useTransform(scrollYProgress, [0, 0.5], [80, -120]);
+  const orbOpacity = useTransform(scrollYProgress, [0, 0.15, 0.6], [0, 0.85, 0.2]);
+  // Section title parallax — slides up & fades in as you cross the threshold.
+  const headerY = useTransform(scrollYProgress, [0, 0.2], [60, 0]);
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
+
+  // Perspective rise — pairs with the hero's dolly. As About enters, it
+  // rises from below with a slight forward tilt that resolves to flat.
+  const stageRotateX = useTransform(scrollYProgress, [0, 0.18], [10, 0]);
+  const stageTranslateY = useTransform(scrollYProgress, [0, 0.18], [80, 0]);
+  const stageOpacity = useTransform(scrollYProgress, [0, 0.12], [0.4, 1]);
+
   return (
     <section
+      ref={sectionRef}
       id="about"
       className="relative py-24 overflow-hidden"
-      style={{ background: "linear-gradient(180deg, #0d0d2b 0%, #080818 100%)" }}
+      style={{
+        // Seamless handoff with hero gradient (ends at #2d1654). Bottom transitions
+        // toward the warm-violet of the Projects section seam.
+        background:
+          "linear-gradient(180deg, #1a0a2e 0%, #0d0d2b 30%, #15091a 80%, #1a0a2e 100%)",
+        perspective: "1400px",
+        perspectiveOrigin: "50% 0%",
+      }}
     >
-      {/* Background glow */}
+      {/* Continuity orb — visually inherits from the hero's bottom-right cyan orb */}
+      <motion.div
+        aria-hidden
+        className="absolute pointer-events-none"
+        style={{
+          top: -200,
+          right: -120,
+          width: 600,
+          height: 600,
+          background:
+            "radial-gradient(circle, rgba(59,130,246,0.16), transparent 70%)",
+          filter: "blur(80px)",
+          y: orbY,
+          opacity: orbOpacity,
+        }}
+      />
+      {/* Top vignette — softens the seam with hero */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse, rgba(139,92,246,0.08) 0%, transparent 70%)", filter: "blur(40px)" }}
+        aria-hidden
+        className="absolute top-0 left-0 right-0 h-32 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(26,10,46,0.6) 0%, transparent 100%)",
+        }}
       />
 
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Section Header */}
-        <ScrollReveal className="text-center mb-16">
-          <span className="text-xs tracking-widest uppercase mb-3 block" style={{ color: "#8b5cf6" }}>About Me</span>
+      {/* Background glow */}
+      <div
+        className="absolute top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse, rgba(124,58,237,0.10) 0%, transparent 70%)",
+          filter: "blur(50px)",
+        }}
+      />
+
+      <motion.div
+        className="max-w-7xl mx-auto px-6 relative"
+        style={{
+          rotateX: stageRotateX,
+          y: stageTranslateY,
+          opacity: stageOpacity,
+          transformOrigin: "50% 0%",
+          transformStyle: "preserve-3d",
+          willChange: "transform, opacity",
+        }}
+      >
+        {/* Section Header — scroll-driven entrance */}
+        <motion.div
+          className="text-center mb-10"
+          style={{ y: headerY, opacity: headerOpacity }}
+        >
+          <span
+            className="text-xs tracking-widest uppercase mb-3 block"
+            style={{ color: "#a78bfa" }}
+          >
+            About Me
+          </span>
           <h2 className="text-4xl lg:text-5xl font-black text-white relative inline-block">
             Crafting Digital Excellence
             <motion.div
               className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-px rounded-full"
-              style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, #3b82f6, transparent)" }}
-              initial={{ width: 0 }} whileInView={{ width: "60%" }} viewport={{ once: true }}
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, #7c3aed, #3b82f6, transparent)",
+              }}
+              initial={{ width: 0 }}
+              whileInView={{ width: "60%" }}
+              viewport={{ once: true }}
               transition={{ duration: 1, delay: 0.3 }}
             />
           </h2>
+        </motion.div>
+
+        {/* Bio lead-in — the paragraph that used to live in the Hero */}
+        <ScrollReveal className="max-w-3xl mx-auto text-center mb-20">
+          <p
+            className="text-lg lg:text-xl leading-relaxed"
+            style={{ color: "var(--text-secondary)", fontFamily: "var(--font-body)" }}
+          >
+            Passionate about building <span style={{ color: "#a78bfa" }}>AI agents</span>{" "}
+            and <span style={{ color: "#60a5fa" }}>automation systems</span>, shipping
+            them as production full-stack apps, and securing them end-to-end.
+            Specialising in cybersecurity, ethical hacking, and full-stack
+            development with JavaScript &amp; TypeScript.
+          </p>
         </ScrollReveal>
 
         {/* Stats grid */}
@@ -114,7 +220,7 @@ export function About() {
                 >
                   <motion.div
                     className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center text-xl"
-                    style={{ background: `${stat.color}1a` }}
+                    style={{ background: `${stat.color}1a`, color: stat.color }}
                     whileHover={{ rotate: [0, -10, 10, 0], scale: 1.15 }}
                     transition={{ duration: 0.4 }}
                   >
@@ -143,26 +249,32 @@ export function About() {
                 style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.25), rgba(59,130,246,0.25))", filter: "blur(24px)" }}
                 transition={{ duration: 0.5 }}
               />
-              <TiltCard className="rounded-2xl overflow-hidden" intensity={6} glowColor="rgba(139,92,246,0.12)">
-                <div className="relative overflow-hidden rounded-2xl">
-                  <img
-                    src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-                    alt="Cybersecurity Workspace"
-                    className="w-full h-72 object-cover"
-                    style={{ transition: "transform 0.5s ease" }}
-                  />
-                  <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.2) 0%, transparent 60%)" }} />
-                  {/* Horizontal scan line */}
+              <TiltCard className="rounded-2xl overflow-hidden" intensity={6} glowColor="rgba(139,92,246,0.18)">
+                <div
+                  className="relative overflow-hidden rounded-2xl"
+                  style={{
+                    background:
+                      "linear-gradient(160deg, rgba(13,13,43,0.85) 0%, rgba(8,8,24,0.95) 100%)",
+                    border: "1px solid rgba(139,92,246,0.18)",
+                    height: 320,
+                  }}
+                >
+                  <WorkspaceSVG />
+                  {/* Horizontal scan line over the illustration for atmosphere */}
                   <motion.div
                     className="absolute inset-0 pointer-events-none"
-                    style={{ background: "linear-gradient(to bottom, transparent 40%, rgba(139,92,246,0.12) 50%, transparent 60%)" }}
+                    style={{
+                      background:
+                        "linear-gradient(to bottom, transparent 40%, rgba(139,92,246,0.10) 50%, transparent 60%)",
+                    }}
                     animate={{ y: ["-100%", "200%"] }}
-                    transition={{ duration: 3.5, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
+                    transition={{
+                      duration: 3.5,
+                      repeat: Infinity,
+                      ease: "linear",
+                      repeatDelay: 2,
+                    }}
                   />
-                  {/* Corner decorations */}
-                  {[["top-2 left-2", "border-t-2 border-l-2"], ["top-2 right-2", "border-t-2 border-r-2"], ["bottom-2 left-2", "border-b-2 border-l-2"], ["bottom-2 right-2", "border-b-2 border-r-2"]].map(([pos, b], i) => (
-                    <div key={i} className={`absolute w-5 h-5 ${pos} ${b} opacity-60`} style={{ borderColor: "rgba(139,92,246,0.7)" }} />
-                  ))}
                 </div>
               </TiltCard>
             </div>
@@ -250,7 +362,7 @@ export function About() {
             </TiltCard>
           </div>
         </ScrollReveal>
-      </div>
+      </motion.div>
     </section>
   );
 }
